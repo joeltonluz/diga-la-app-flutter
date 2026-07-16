@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/temp_tts_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -56,7 +55,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                const TempTtsButton(),
               ],
             ),
           ),
