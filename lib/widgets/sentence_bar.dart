@@ -5,12 +5,14 @@ class SentenceBar extends StatelessWidget {
   final List<Card> cards;
   final ScrollController? scrollController;
   final bool compact;
+  final String? Function(Card)? labelFor;
 
   const SentenceBar({
     super.key,
     required this.cards,
     this.scrollController,
     this.compact = false,
+    this.labelFor,
   });
 
   @override
@@ -44,7 +46,12 @@ class SentenceBar extends StatelessWidget {
               itemCount: cards.length,
               separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (context, index) {
-                return _MiniCard(card: cards[index], compact: compact);
+                final card = cards[index];
+                return _MiniCard(
+                  card: card,
+                  compact: compact,
+                  label: labelFor?.call(card),
+                );
               },
             )
           : Center(
@@ -63,8 +70,9 @@ class SentenceBar extends StatelessWidget {
 class _MiniCard extends StatelessWidget {
   final Card card;
   final bool compact;
+  final String? label;
 
-  const _MiniCard({required this.card, this.compact = false});
+  const _MiniCard({required this.card, this.compact = false, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +94,7 @@ class _MiniCard extends StatelessWidget {
           Text(card.emoji, style: TextStyle(fontSize: compact ? 20 : 26)),
           const SizedBox(height: 2),
           Text(
-            card.label,
+            label ?? card.label,
             style: theme.textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: compact ? 9 : 10,

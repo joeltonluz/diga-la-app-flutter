@@ -50,6 +50,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final languageService = ref.watch(languageServiceProvider);
     final hasCards = _sentenceCards.isNotEmpty;
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
@@ -66,6 +67,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
               cards: _sentenceCards,
               scrollController: _scrollController,
               compact: isLandscape,
+              labelFor: languageService.labelFor,
             ),
           ),
           Padding(
@@ -133,6 +135,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                     children: sampleCards.map((card) {
                       return CardTile(
                         card: card,
+                        label: languageService.labelFor(card),
                         onTap: () => _addCard(card),
                       );
                     }).toList(),

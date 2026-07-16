@@ -66,16 +66,20 @@ void main() {
       verify(() => tts.speak('water')).called(1);
     });
 
-    test('PT+EN mode speaks both in sequence', () async {
+  });
+
+  group('labelFor', () {
+    test('PT mode returns labelPt', () {
+      final tts = MockTtsService();
       final service = LanguageService(tts);
-      await service.setMode(LanguageMode.ptEn);
-      await service.speak(card);
-      verifyInOrder([
-        () => tts.setLanguage('pt-BR'),
-        () => tts.speak('água'),
-        () => tts.setLanguage('en-US'),
-        () => tts.speak('water'),
-      ]);
+      expect(service.labelFor(card), 'água');
+    });
+
+    test('EN mode returns labelEn', () async {
+      final tts = MockTtsService();
+      final service = LanguageService(tts);
+      await service.setMode(LanguageMode.en);
+      expect(service.labelFor(card), 'water');
     });
   });
 }

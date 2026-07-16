@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/card.dart';
 import 'tts_service.dart';
 
-enum LanguageMode { pt, en, ptEn }
+enum LanguageMode { pt, en }
 
 class LanguageService extends ChangeNotifier {
   final TtsService _tts;
@@ -41,11 +41,15 @@ class LanguageService extends ChangeNotifier {
       case LanguageMode.en:
         await _tts.setLanguage('en-US');
         await _tts.speak(card.labelEn);
-      case LanguageMode.ptEn:
-        await _tts.setLanguage('pt-BR');
-        await _tts.speak(card.labelPt);
-        await _tts.setLanguage('en-US');
-        await _tts.speak(card.labelEn);
+    }
+  }
+
+  String labelFor(Card card) {
+    switch (_mode) {
+      case LanguageMode.pt:
+        return card.labelPt;
+      case LanguageMode.en:
+        return card.labelEn;
     }
   }
 }

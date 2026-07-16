@@ -12,7 +12,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('settings screen shows three language options', (tester) async {
+  testWidgets('settings screen shows two language options', (tester) async {
     final tts = MockTtsService();
     final languageService = LanguageService(tts);
 
@@ -30,6 +30,5 @@ void main() {
 
     expect(find.text('Português'), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
-    expect(find.text('Português + English'), findsOneWidget);
   });
 }

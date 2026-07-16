@@ -4,11 +4,13 @@ import '../models/card.dart';
 class CardTile extends StatelessWidget {
   final Card card;
   final VoidCallback onTap;
+  final String? label;
 
   const CardTile({
     super.key,
     required this.card,
     required this.onTap,
+    this.label,
   });
 
   @override
@@ -36,7 +38,7 @@ class CardTile extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                card.label,
+                label ?? card.label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),

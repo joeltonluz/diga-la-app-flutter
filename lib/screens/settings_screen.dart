@@ -38,15 +38,6 @@ class SettingsScreen extends ConsumerWidget {
             isSelected: current == LanguageMode.en,
             onTap: () => languageService.setMode(LanguageMode.en),
           ),
-          const SizedBox(height: 12),
-          _ModeCard(
-            mode: LanguageMode.ptEn,
-            flag: '🌐',
-            title: 'Português + English',
-            description: 'Fala os dois idiomas em sequência',
-            isSelected: current == LanguageMode.ptEn,
-            onTap: () => languageService.setMode(LanguageMode.ptEn),
-          ),
         ],
       ),
     );

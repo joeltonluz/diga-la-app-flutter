@@ -35,6 +35,7 @@ class CategoryGridScreen extends StatelessWidget {
               children: category.items.map((card) {
                 return CardTile(
                   card: card,
+                  label: languageService.labelFor(card),
                   onTap: () => languageService.speak(card),
                 );
               }).toList(),
