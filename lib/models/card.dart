@@ -1,11 +1,15 @@
 class Card {
   final String id;
-  final String label;
+  final String labelPt;
+  final String labelEn;
   final String emoji;
 
   const Card({
     required this.id,
-    required this.label,
+    required this.labelPt,
+    required this.labelEn,
     required this.emoji,
   });
+
+  String get label => labelPt;
 }
