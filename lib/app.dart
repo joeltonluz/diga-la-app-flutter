@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'theme/app_theme.dart';
-import 'screens/home_screen.dart';
+
 import 'screens/converse_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/learn_screen.dart';
+import 'theme/app_theme.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

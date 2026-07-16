@@ -18,8 +18,18 @@ O app tem dois modos que compartilham o mesmo motor (grade de imagens tocáveis
    fala em voz alta. Ferramenta de **expressão** — dizer o que quer, sente ou
    precisa.
 2. **Modo Aprender:** livro interativo por categorias (animais, frutas,
-   transportes, profissões, partes do corpo), bilíngue PT–EN. Ferramenta de
+   transportes, partes do corpo, cores), bilíngue PT–EN. Ferramenta de
    **aprendizado** de vocabulário por associação visual e auditiva.
+
+## Idioma (bilíngue global)
+
+- O comportamento bilíngue (PT + EN) é **global**, controlado por uma
+  **configuração central salva no aparelho**, e vale para os **dois modos**
+  (Conversar e Aprender).
+- Cada cartão/item carrega rótulo em **PT e EN**.
+- A configuração define como o app fala (ex.: só PT, só EN, ou PT+EN em
+  sequência). Todos os modos consultam esse serviço central na hora de falar —
+  nenhum modo resolve idioma por conta própria.
 
 ## Restrições técnicas (não-negociáveis)
 
@@ -28,13 +38,16 @@ O app tem dois modos que compartilham o mesmo motor (grade de imagens tocáveis
 - **Sem backend, sem servidor, sem login, sem chamadas de rede.**
 - **100% offline.** Todo processamento e persistência acontecem no dispositivo.
 - **Persistência local:** SQLite (`sqflite`) ou `Hive` — a escolha e sua
-  justificativa devem ser registradas no `design.md` da change de setup.
+  justificativa devem ser registradas no `design.md` da change que primeiro
+  introduzir persistência (`language-settings`).
 - **Text-to-speech:** `flutter_tts`, com suporte a **PT-BR** e **EN**.
 - **Gerência de estado:** Riverpod (preferência) ou Provider — a escolha e sua
   justificativa devem ser registradas no `design.md` da change de setup.
 - **Reconhecimento de imagem (se e quando existir):** deve ser **on-device**
   (Google ML Kit ou TensorFlow Lite via `tflite_flutter`). Nunca enviar imagem
   para a nuvem. Isso **não é MCP** e não envolve nenhum serviço externo.
+- **QR code (tela Sobre):** gerado **localmente** no app (ex.: `qr_flutter`) a
+  partir de uma URL pública. Nada é enviado para fora do aparelho.
 
 ## Privacidade (requisito, não enfeite)
 
@@ -42,6 +55,8 @@ O app tem dois modos que compartilham o mesmo motor (grade de imagens tocáveis
   **nunca saem do aparelho**.
 - Nenhuma telemetria, analytics ou coleta de dados.
 - Nenhuma permissão de rede necessária para o funcionamento do app.
+- A tela "Sobre o desenvolvedor" usa apenas **informações públicas do
+  desenvolvedor (adulto)** — nunca dados da criança.
 
 ## Princípios de design inclusivo (não-negociáveis)
 
@@ -71,10 +86,24 @@ O app tem dois modos que compartilham o mesmo motor (grade de imagens tocáveis
 
 ## Roadmap de changes
 
-1. `setup-project` — esqueleto, tema, navegação, branding, TTS testável.
-2. `card-grid-tts` — grade de cartões que falam ao toque (cartões fixos).
-3. `learn-mode-categories` — modo aprender, categorias, bilíngue PT–EN.
-4. `sentence-bar` — barra que encadeia cartões numa frase e fala tudo (CAA).
-5. `custom-cards-camera` — criar cartões com foto real + nome + áudio.
-6. `persistence-local` — persistir cartões/categorias do usuário no dispositivo.
-7. `on-device-labeling` (opcional) — ML Kit sugere o cartão a partir da câmera.
+Concluídas:
+1. `setup-project` ✅ — esqueleto, tema, navegação, branding, TTS testável.
+2. `card-grid-tts` ✅ — grade de cartões que falam ao toque (Modo Conversar).
+
+A fazer (nesta ordem):
+3. `bilingual-data-model` — estender o modelo de cartão/item para carregar
+   rótulo em PT e EN; atualizar a lista fixa do Modo Conversar. Só dados/modelo.
+4. `language-settings` — configuração central de idioma salva no aparelho
+   (primeiro uso de persistência local) e serviço que todo o app consulta.
+5. `learn-mode-categories` — modo aprender com categorias fixas, consumindo o
+   modelo bilíngue e a configuração central.
+6. `sentence-bar` — barra que encadeia cartões numa frase e fala tudo (CAA),
+   respeitando a configuração de idioma.
+7. `about-developer` — tela "Sobre" com informações do desenvolvedor, link do
+   LinkedIn/repositório e QR code gerado localmente (projeto open source).
+8. `custom-cards-camera` — criar cartões com foto real + nome (PT e EN) + áudio.
+9. `persistence-local` — persistir cartões/categorias do usuário no dispositivo.
+10. `on-device-labeling` (opcional) — ML Kit sugere o cartão a partir da câmera.
+
+Princípio de ordem: primeiro o DADO bilíngue (3), depois a CONFIGURAÇÃO que o
+controla (4), e só então os modos que CONSOMEM isso (5, 6).

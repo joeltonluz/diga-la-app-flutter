@@ -15,11 +15,7 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/logo.png',
-                  width: 120,
-                  height: 120,
-                ),
+                Image.asset('assets/logo.png', width: 120, height: 120),
                 const SizedBox(height: 16),
                 Text(
                   'Diga Lá',
@@ -29,7 +25,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Comunicação que aproxima',
+                  'Comunicação que aproxima. 🧩',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.primary.withValues(alpha: 0.7),
                   ),
