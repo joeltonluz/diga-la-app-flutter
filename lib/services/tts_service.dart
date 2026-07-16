@@ -4,21 +4,28 @@ import '../models/voice.dart';
 class TtsService {
   final FlutterTts _tts;
   Voice? _currentVoice;
+  double _speechRate = 0.35;
 
   TtsService({FlutterTts? tts})
       : _tts = tts ?? FlutterTts() {
     _tts.setLanguage('pt-BR');
-    _tts.setSpeechRate(0.5);
     _tts.setPitch(1.0);
   }
 
   Voice? get currentVoice => _currentVoice;
+  double get speechRate => _speechRate;
 
   Future<void> speak(String text) async {
+    await _tts.setSpeechRate(_speechRate);
     if (_currentVoice != null) {
       await _tts.setVoice({'name': _currentVoice!.name, 'locale': _currentVoice!.locale});
     }
     await _tts.speak(text);
+  }
+
+  Future<void> setSpeechRate(double rate) async {
+    _speechRate = rate;
+    await _tts.setSpeechRate(rate);
   }
 
   Future<void> setLanguage(String lang) async {

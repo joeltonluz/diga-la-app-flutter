@@ -13,10 +13,12 @@ class VoiceService extends ChangeNotifier {
   List<Voice> _allTtsVoices = [];
   List<Voice> _filteredVoices = [];
   Voice? _selectedVoice;
+  double _speechRate = 0.35;
   final Completer<void> _ready = Completer<void>();
 
   List<Voice> get voices => List.unmodifiable(_filteredVoices);
   Voice? get selectedVoice => _selectedVoice;
+  double get speechRate => _speechRate;
   Future<void> get ready => _ready.future;
 
   VoiceService(this._tts, this._languageService) {
@@ -25,13 +27,24 @@ class VoiceService extends ChangeNotifier {
   }
 
   Future<void> _init() async {
+    await _loadRate();
     await _loadAndFilter();
     _ready.complete();
   }
 
   Future<void> _onLanguageChanged() async {
     await _loadAndFilter();
+    await _tts.setSpeechRate(_speechRate);
     notifyListeners();
+  }
+
+  Future<void> _loadRate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getDouble('speechRate');
+    if (saved != null && saved >= 0.01 && saved <= 1.0) {
+      _speechRate = saved;
+    }
+    await _tts.setSpeechRate(_speechRate);
   }
 
   Future<void> _loadAndFilter() async {
@@ -43,11 +56,28 @@ class VoiceService extends ChangeNotifier {
     await _restoreOrFallback();
   }
 
+  Future<void> previewRate(double rate) async {
+    await _tts.setSpeechRate(rate);
+    final isPt = _languageService.currentMode == LanguageMode.pt;
+    final phrase = isPt
+        ? 'Oi, prazer, estou aqui para te ajudar.'
+        : "Hi, nice to meet you, I'm here to help you.";
+    await _tts.speak(phrase);
+  }
+
+  Future<void> setSpeechRate(double rate) async {
+    _speechRate = rate;
+    await _tts.setSpeechRate(rate);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('speechRate', rate);
+    notifyListeners();
+  }
+
   List<Voice> _filterVoices(List<Voice> all, LanguageMode mode) {
     final locale = mode == LanguageMode.pt ? 'pt-BR' : 'en-US';
     final filtered = all.where((v) => v.locale == locale).toList();
     filtered.sort(_compareVoices);
-    return filtered.toList();
+    return filtered.take(5).toList();
   }
 
   int _compareVoices(Voice a, Voice b) {

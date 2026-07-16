@@ -50,6 +50,12 @@ class SettingsScreen extends ConsumerWidget {
             onSelect: (voice) => voiceService.selectVoice(voice),
             onPreview: (voice) => voiceService.previewVoice(voice),
           ),
+          const SizedBox(height: 32),
+          _RateSection(
+            currentRate: voiceService.speechRate,
+            onSelect: (rate) => voiceService.setSpeechRate(rate),
+            onPreview: (rate) => voiceService.previewRate(rate),
+          ),
         ],
       ),
     );
@@ -199,6 +205,171 @@ class _VoiceCard extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     fontSize: 15,
                   ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.play_circle_outline_rounded,
+                  color: theme.colorScheme.primary,
+                  size: 28,
+                ),
+                onPressed: onPlay,
+                tooltip: 'Ouvir',
+              ),
+              const SizedBox(width: 4),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                  border: Border.all(
+                    color: isSelected ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.4),
+                    width: 2,
+                  ),
+                ),
+                child: isSelected
+                    ? Icon(Icons.check, size: 16, color: theme.colorScheme.onPrimary)
+                    : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+const _rateLevels = [
+  ('Muito Lento', 'Muito lento, para crianças que precisam de bastante tempo', 0.25),
+  ('Lento', 'Lento e claro, bom para o dia a dia', 0.35),
+  ('Médio', 'Velocidade mediana, para quem já está acostumado', 0.45),
+  ('Rápido', 'Rápido, para conversas mais ágeis', 0.55),
+];
+
+class _RateSection extends StatelessWidget {
+  final double currentRate;
+  final ValueChanged<double> onSelect;
+  final ValueChanged<double> onPreview;
+
+  const _RateSection({
+    required this.currentRate,
+    required this.onSelect,
+    required this.onPreview,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Velocidade',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Escolha a velocidade da fala.',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 16),
+        for (final (name, desc, rate) in _rateLevels)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _RateCard(
+              name: name,
+              description: desc,
+              rate: rate,
+              isSelected: currentRate == rate,
+              onTap: () => onSelect(rate),
+              onPlay: () => onPreview(rate),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _RateCard extends StatelessWidget {
+  final String name;
+  final String description;
+  final double rate;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final VoidCallback onPlay;
+
+  const _RateCard({
+    required this.name,
+    required this.description,
+    required this.rate,
+    required this.isSelected,
+    required this.onTap,
+    required this.onPlay,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = isSelected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.outline.withValues(alpha: 0.3);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.08)
+              : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color,
+            width: isSelected ? 2 : 1.5,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          child: Row(
+            children: [
+              Icon(
+                Icons.speed_rounded,
+                size: 28,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               IconButton(

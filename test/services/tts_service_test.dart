@@ -65,6 +65,34 @@ void main() {
     });
   });
 
+  group('speech rate', () {
+    test('default speech rate is 0.35', () {
+      expect(tts.speechRate, 0.35);
+    });
+
+    test('setSpeechRate delegates to flutter_tts and stores value', () async {
+      await tts.setSpeechRate(0.45);
+
+      verify(() => mockFlutterTts.setSpeechRate(0.45)).called(1);
+      expect(tts.speechRate, 0.45);
+    });
+
+    test('speak calls setSpeechRate with default rate', () async {
+      await tts.speak('água');
+
+      verify(() => mockFlutterTts.setSpeechRate(0.35)).called(1);
+      verify(() => mockFlutterTts.speak('água')).called(1);
+    });
+
+    test('speak calls setSpeechRate with updated rate after change', () async {
+      await tts.setSpeechRate(0.45);
+      await tts.speak('água');
+
+      verify(() => mockFlutterTts.setSpeechRate(0.45)).called(2);
+      verify(() => mockFlutterTts.speak('água')).called(1);
+    });
+  });
+
   group('speak with voice', () {
     test('calls setVoice before speak when a voice is configured', () async {
       const voice = Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR');

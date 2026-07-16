@@ -20,6 +20,8 @@ void main() {
 
     when(() => mockTts.getVoices()).thenAnswer((_) async => []);
     when(() => mockTts.setVoice(any())).thenAnswer((_) async {});
+    when(() => mockTts.setSpeechRate(any())).thenAnswer((_) async {});
+    when(() => mockTts.speechRate).thenReturn(0.35);
     when(() => mockTts.speak(any())).thenAnswer((_) async {});
     when(() => mockTts.stop()).thenAnswer((_) async {});
   });
@@ -101,6 +103,56 @@ void main() {
       await service.ready;
 
       expect(service.selectedVoice?.name, 'pt-BR-Standard-A');
+    });
+  });
+
+  group('speech rate', () {
+    test('default rate is 0.35 when no preference saved', () async {
+      when(() => mockTts.getVoices()).thenAnswer((_) async => [
+            const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
+          ]);
+
+      final service = VoiceService(mockTts, languageService);
+      await service.ready;
+
+      expect(service.speechRate, 0.35);
+    });
+
+    test('setSpeechRate persists to SharedPreferences', () async {
+      when(() => mockTts.getVoices()).thenAnswer((_) async => [
+            const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
+          ]);
+      final service = VoiceService(mockTts, languageService);
+      await service.ready;
+
+      await service.setSpeechRate(0.45);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getDouble('speechRate'), 0.45);
+    });
+
+    test('corrupted persisted value falls back to 0.35', () async {
+      SharedPreferences.setMockInitialValues({'speechRate': 0.0});
+      when(() => mockTts.getVoices()).thenAnswer((_) async => [
+            const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
+          ]);
+
+      final service = VoiceService(mockTts, languageService);
+      await service.ready;
+
+      expect(service.speechRate, 0.35);
+    });
+
+    test('setSpeechRate applies rate via TTS', () async {
+      when(() => mockTts.getVoices()).thenAnswer((_) async => [
+            const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
+          ]);
+      final service = VoiceService(mockTts, languageService);
+      await service.ready;
+
+      await service.setSpeechRate(0.45);
+
+      verify(() => mockTts.setSpeechRate(0.45)).called(1);
     });
   });
 }
