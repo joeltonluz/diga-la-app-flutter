@@ -6,7 +6,7 @@ final ttsServiceProvider = Provider<TtsService>((ref) {
   return TtsService();
 });
 
-final languageServiceProvider = FutureProvider<LanguageService>((ref) async {
+final languageServiceProvider = ChangeNotifierProvider<LanguageService>((ref) {
   final tts = ref.read(ttsServiceProvider);
-  return LanguageService.create(tts);
+  return LanguageService(tts);
 });

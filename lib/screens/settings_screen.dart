@@ -8,113 +8,127 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final languageAsync = ref.watch(languageServiceProvider);
+    final languageService = ref.watch(languageServiceProvider);
+    final current = languageService.currentMode;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configurações'),
+        centerTitle: true,
       ),
-      body: languageAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Erro: $e')),
-        data: (languageService) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                'Idioma de fala',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Escolha como o app fala os cartões ao toque.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.7),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _LanguageOption(
-                mode: LanguageMode.pt,
-                title: 'Só Português',
-                description: 'O app fala em português',
-                selected: languageService.currentMode == LanguageMode.pt,
-                onChanged: (mode) => languageService.setMode(mode),
-              ),
-              const SizedBox(height: 8),
-              _LanguageOption(
-                mode: LanguageMode.en,
-                title: 'Só Inglês',
-                description: 'O app fala em inglês',
-                selected: languageService.currentMode == LanguageMode.en,
-                onChanged: (mode) => languageService.setMode(mode),
-              ),
-              const SizedBox(height: 8),
-              _LanguageOption(
-                mode: LanguageMode.ptEn,
-                title: 'Português e Inglês',
-                description: 'O app fala os dois, um depois do outro',
-                selected: languageService.currentMode == LanguageMode.ptEn,
-                onChanged: (mode) => languageService.setMode(mode),
-              ),
-            ],
-          );
-        },
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        children: [
+          _Header(),
+          const SizedBox(height: 24),
+          _ModeCard(
+            mode: LanguageMode.pt,
+            flag: '🇧🇷',
+            title: 'Português',
+            description: 'Fala os cartões em português do Brasil',
+            isSelected: current == LanguageMode.pt,
+            onTap: () => languageService.setMode(LanguageMode.pt),
+          ),
+          const SizedBox(height: 12),
+          _ModeCard(
+            mode: LanguageMode.en,
+            flag: '🇺🇸',
+            title: 'English',
+            description: 'Speaks cards in American English',
+            isSelected: current == LanguageMode.en,
+            onTap: () => languageService.setMode(LanguageMode.en),
+          ),
+          const SizedBox(height: 12),
+          _ModeCard(
+            mode: LanguageMode.ptEn,
+            flag: '🌐',
+            title: 'Português + English',
+            description: 'Fala os dois idiomas em sequência',
+            isSelected: current == LanguageMode.ptEn,
+            onTap: () => languageService.setMode(LanguageMode.ptEn),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _LanguageOption extends StatelessWidget {
+class _Header extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Idioma de fala',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Escolha como o app fala em voz alta os cartões que você tocar.',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ModeCard extends StatelessWidget {
   final LanguageMode mode;
+  final String flag;
   final String title;
   final String description;
-  final bool selected;
-  final ValueChanged<LanguageMode> onChanged;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  const _LanguageOption({
+  const _ModeCard({
     required this.mode,
+    required this.flag,
     required this.title,
     required this.description,
-    required this.selected,
-    required this.onChanged,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final color = isSelected ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.3);
 
-    return Material(
-      color: selected
-          ? theme.colorScheme.primary.withValues(alpha: 0.1)
-          : theme.colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: () => onChanged(mode),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 56),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.08)
+              : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color,
+            width: isSelected ? 2 : 1.5,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           child: Row(
             children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: selected ? theme.colorScheme.primary : Colors.transparent,
-                  border: Border.all(
-                    color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                    width: 2,
-                  ),
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(
+                  child: Text(flag, style: const TextStyle(fontSize: 34)),
                 ),
-                child: selected
-                    ? Icon(Icons.check, size: 16, color: theme.colorScheme.onPrimary)
-                    : null,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,20 +137,38 @@ class _LanguageOption extends StatelessWidget {
                       title,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
+                        fontSize: 17,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                        fontSize: 14,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (selected)
-                Icon(Icons.check, color: theme.colorScheme.primary),
+              const SizedBox(width: 12),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                  border: Border.all(
+                    color: isSelected ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.4),
+                    width: 2,
+                  ),
+                ),
+                child: isSelected
+                    ? Icon(Icons.check, size: 16, color: theme.colorScheme.onPrimary)
+                    : null,
+              ),
             ],
           ),
         ),

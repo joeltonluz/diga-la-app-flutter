@@ -1,29 +1,34 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/card.dart';
 import 'tts_service.dart';
 
 enum LanguageMode { pt, en, ptEn }
 
-class LanguageService {
+class LanguageService extends ChangeNotifier {
   final TtsService _tts;
-  LanguageMode _mode;
+  LanguageMode _mode = LanguageMode.pt;
 
-  LanguageService(this._tts, this._mode);
-
-  static Future<LanguageService> create(TtsService tts) async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('languageMode') ?? 'pt';
-    final mode = LanguageMode.values.firstWhere(
-      (m) => m.name == saved,
-      orElse: () => LanguageMode.pt,
-    );
-    return LanguageService(tts, mode);
+  LanguageService(this._tts) {
+    _loadSavedMode();
   }
 
   LanguageMode get currentMode => _mode;
 
+  Future<void> _loadSavedMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('languageMode') ?? 'pt';
+    _mode = LanguageMode.values.firstWhere(
+      (m) => m.name == saved,
+      orElse: () => LanguageMode.pt,
+    );
+    notifyListeners();
+  }
+
   Future<void> setMode(LanguageMode mode) async {
+    if (mode == _mode) return;
     _mode = mode;
+    notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('languageMode', mode.name);
   }
