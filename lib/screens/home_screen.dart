@@ -8,6 +8,16 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+            tooltip: 'Configurações',
+            iconSize: 28,
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: Padding(
