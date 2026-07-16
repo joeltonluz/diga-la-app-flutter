@@ -15,23 +15,31 @@ class CategoryGridScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(category.name),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1,
-          children: category.items.map((card) {
-            return CardTile(
-              card: card,
-              onTap: () => languageService.speak(card),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final cellRatio = isLandscape ? 1.4 : 1.0;
+            return GridView.count(
+              crossAxisCount: isLandscape ? 3 : 2,
+              mainAxisSpacing: isLandscape ? 10 : 16,
+              crossAxisSpacing: isLandscape ? 10 : 16,
+              childAspectRatio: cellRatio,
+              children: category.items.map((card) {
+                return CardTile(
+                  card: card,
+                  onTap: () => languageService.speak(card),
+                );
+              }).toList(),
             );
-          }).toList(),
+          },
         ),
       ),
     );
