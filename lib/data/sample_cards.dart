@@ -11,4 +11,8 @@ const List<Card> sampleCards = [
   Card(id: 'nao', labelPt: 'não', labelEn: 'no', emoji: '👎'),
   Card(id: 'quero', labelPt: 'quero', labelEn: 'want', emoji: '🙋'),
   Card(id: 'acabou', labelPt: 'acabou', labelEn: 'finished', emoji: '✅'),
+  Card(id: 'eu', labelPt: 'eu', labelEn: 'I', emoji: '👤'),
+  Card(id: 'nao_lig', labelPt: 'não', labelEn: 'not', emoji: '🚫'),
+  Card(id: 'mais', labelPt: 'mais', labelEn: 'more', emoji: '➕'),
+  Card(id: 'por_favor', labelPt: 'por favor', labelEn: 'please', emoji: '🙏'),
 ];
