@@ -8,14 +8,21 @@ void main() {
   late MockFlutterTts mockFlutterTts;
   late TtsService tts;
 
+  late void Function() onComplete;
+
   setUp(() {
     mockFlutterTts = MockFlutterTts();
     when(() => mockFlutterTts.setLanguage(any())).thenAnswer((_) async {});
     when(() => mockFlutterTts.setSpeechRate(any())).thenAnswer((_) async {});
     when(() => mockFlutterTts.setPitch(any())).thenAnswer((_) async {});
-    when(() => mockFlutterTts.speak(any())).thenAnswer((_) async {});
     when(() => mockFlutterTts.stop()).thenAnswer((_) async {});
     when(() => mockFlutterTts.setVoice(any())).thenAnswer((_) async {});
+    when(() => mockFlutterTts.setCompletionHandler(any())).thenAnswer((invocation) {
+      onComplete = invocation.positionalArguments[0] as void Function();
+    });
+    when(() => mockFlutterTts.speak(any())).thenAnswer((_) async {
+      onComplete();
+    });
     tts = TtsService(tts: mockFlutterTts);
   });
 

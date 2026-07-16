@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/voice.dart';
 
@@ -20,7 +21,12 @@ class TtsService {
     if (_currentVoice != null) {
       await _tts.setVoice({'name': _currentVoice!.name, 'locale': _currentVoice!.locale});
     }
+    final completer = Completer<void>();
+    _tts.setCompletionHandler(() {
+      if (!completer.isCompleted) completer.complete();
+    });
     await _tts.speak(text);
+    await completer.future;
   }
 
   Future<void> setSpeechRate(double rate) async {
