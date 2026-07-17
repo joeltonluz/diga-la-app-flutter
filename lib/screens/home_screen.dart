@@ -6,17 +6,32 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        title: Text(
+          'Diga Lá',
+          style: TextStyle(
+            fontFamily: DesignTokens.fontFamily,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: DesignTokens.colors.brandText1,
+            letterSpacing: 0.2,
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, '/settings'),
-            tooltip: 'Configurações',
-            iconSize: 28,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: SizedBox(
+              width: 52,
+              height: 52,
+              child: IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+                tooltip: 'Configurações',
+                iconSize: 26,
+              ),
+            ),
           ),
         ],
       ),
@@ -40,35 +55,71 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'Diga Lá',
-                      style: theme.textTheme.displayLarge?.copyWith(
+                      style: DesignTokens.textStyles.displayLarge.copyWith(
                         color: DesignTokens.colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Comunicação que aproxima',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: DesignTokens.colors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 48),
                     SizedBox(
                       width: double.infinity,
+                      height: 88,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/converse');
                         },
-                        child: const Text('Conversar'),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('💬', style: TextStyle(fontSize: 28)),
+                            const SizedBox(width: 14),
+                            const Text(
+                              'Conversar',
+                              style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
+                      height: 88,
                       child: OutlinedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/learn');
                         },
-                        child: const Text('Aprender'),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          side: BorderSide(
+                            color: DesignTokens.colors.brand,
+                            width: 2,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('📖', style: TextStyle(fontSize: 28)),
+                            const SizedBox(width: 14),
+                            Text(
+                              'Aprender',
+                              style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                                color: DesignTokens.colors.brandText1,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const Spacer(flex: 2),
