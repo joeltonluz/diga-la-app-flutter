@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logo.png', width: 120, height: 120),
+                Image.asset('assets/logo.png', width: 140, height: 140),
                 const SizedBox(height: 16),
                 Text(
                   'Diga Lá',
@@ -79,7 +79,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Comunicação que aproxima',
-                  style: DesignTokens.textStyles.bodyMedium.copyWith(
+                  style: TextStyle(
+                    fontFamily: DesignTokens.fontFamily,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
                     color: DesignTokens.colors.textSecondary,
                   ),
                 ),
