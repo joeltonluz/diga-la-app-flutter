@@ -51,71 +51,59 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final languageService = ref.watch(languageServiceProvider);
     final hasCards = _sentenceCards.isNotEmpty;
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final size = MediaQuery.of(context).size;
+    final isLandscape = size.width > size.height;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Modo Conversar')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.pop(context),
+          tooltip: 'Voltar',
+        ),
+        title: const Text('Conversar'),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: SentenceBar(
-              cards: _sentenceCards,
-              scrollController: _scrollController,
-              compact: isLandscape,
-              labelFor: languageService.labelFor,
+            child: SizedBox(
+              height: isLandscape ? 80 : 104,
+              child: SentenceBar(
+                cards: _sentenceCards,
+                scrollController: _scrollController,
+                compact: isLandscape,
+                labelFor: languageService.labelFor,
+              ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SizedBox(
-              height: 52,
+              height: 56,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _SecondaryButton(
                     icon: Icons.backspace_rounded,
                     onTap: hasCards ? _removeLast : null,
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: hasCards ? _speakSentence : null,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: hasCards ? 52 : 44,
-                      height: hasCards ? 52 : 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: hasCards
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.surfaceContainerHighest,
-                        boxShadow: hasCards
-                            ? [
-                                BoxShadow(
-                                  color: theme.colorScheme.primary.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Icon(
-                        Icons.play_arrow_rounded,
-                        size: hasCards ? 30 : 24,
-                        color: hasCards
-                            ? theme.colorScheme.onPrimary
-                            : theme.colorScheme.onSurface.withValues(
-                                alpha: 0.3,
-                              ),
+                  ElevatedButton.icon(
+                    onPressed: hasCards ? _speakSentence : null,
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text('Falar'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(120, 48),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
                       ),
                     ),
                   ),
-                  const Spacer(),
                   _SecondaryButton(
                     icon: Icons.delete_rounded,
                     onTap: hasCards ? _clearSentence : null,
@@ -128,23 +116,19 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final cellRatio = isLandscape ? 1.4 : 1.0;
-                  return GridView.count(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: isLandscape ? 10 : 16,
-                    crossAxisSpacing: isLandscape ? 10 : 16,
-                    childAspectRatio: cellRatio,
-                    children: sampleCards.map((card) {
-                      return CardTile(
-                        card: card,
-                        label: languageService.labelFor(card),
-                        onTap: () => _addCard(card),
-                      );
-                    }).toList(),
+              child: GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: isLandscape ? 10 : 16,
+                crossAxisSpacing: isLandscape ? 10 : 16,
+                childAspectRatio: isLandscape ? 1.4 : 1.0,
+                children: sampleCards.map((card) {
+                  return CardTile(
+                    key: ValueKey('card_${card.id}'),
+                    card: card,
+                    label: languageService.labelFor(card),
+                    onTap: () => _addCard(card),
                   );
-                },
+                }).toList(),
               ),
             ),
           ),
