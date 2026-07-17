@@ -1,33 +1,4 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-
-Color oklchToColor(double l, double c, double h, {double alpha = 1.0}) {
-  final hueRad = h * math.pi / 180;
-  final a = c * math.cos(hueRad);
-  final b = c * math.sin(hueRad);
-
-  final l_ = l + 0.3963377774 * a + 0.2158037573 * b;
-  final m_ = l - 0.1055613458 * a - 0.0638541728 * b;
-  final s_ = l - 0.0894841775 * a - 1.2914855480 * b;
-
-  linearToSrgb(double c) {
-    if (c > 0.0031308) {
-      return 1.055 * math.pow(c, 1.0 / 2.4) - 0.055;
-    }
-    return c * 12.92;
-  }
-
-  final r = linearToSrgb(l_);
-  final g = linearToSrgb(m_);
-  final b2 = linearToSrgb(s_);
-
-  return Color.from(
-    alpha: alpha,
-    red: r.clamp(0.0, 1.0),
-    green: g.clamp(0.0, 1.0),
-    blue: b2.clamp(0.0, 1.0),
-  );
-}
 
 class DesignTokens {
   DesignTokens._();
@@ -44,93 +15,93 @@ class DesignTokens {
 class _DesignColors {
   const _DesignColors();
 
-  Color get backgroundExternal => oklchToColor(0.93, 0.006, 75);
-  Color get surfaceScreen => oklchToColor(0.97, 0.012, 75);
-  Color get surfaceCard => oklchToColor(0.99, 0.006, 75);
-  Color get borderSoft => oklchToColor(0.90, 0.015, 75);
-  Color get borderMedium => oklchToColor(0.88, 0.02, 75);
-  Color get textPrimary => oklchToColor(0.32, 0.02, 260);
-  Color get textPrimaryDark => oklchToColor(0.30, 0.02, 260);
-  Color get textSecondary => oklchToColor(0.52, 0.02, 260);
-  Color get textSecondaryHigh => oklchToColor(0.55, 0.02, 260);
-  Color get brand => oklchToColor(0.72, 0.07, 235);
-  Color get brandHover => oklchToColor(0.74, 0.06, 235);
-  Color get brandText1 => oklchToColor(0.45, 0.03, 235);
-  Color get brandText2 => oklchToColor(0.48, 0.03, 235);
-  Color get brandText3 => oklchToColor(0.50, 0.06, 235);
-  Color get brandDark => oklchToColor(0.40, 0.09, 235);
-  Color get roseSoft => oklchToColor(0.85, 0.06, 15, alpha: 0.75);
-  Color get shadow => oklchToColor(0.30, 0.02, 260, alpha: 0.18);
+  Color get backgroundExternal => const Color(0xFFEAE7E3);
+  Color get surfaceScreen => const Color(0xFFFAF4EC);
+  Color get surfaceCard => const Color(0xFFFEFBF7);
+  Color get borderSoft => const Color(0xFFE4DDD3);
+  Color get borderMedium => const Color(0xFFDFD6C9);
+  Color get textPrimary => const Color(0xFF2D333D);
+  Color get textPrimaryDark => const Color(0xFF282E38);
+  Color get textSecondary => const Color(0xFF626975);
+  Color get textSecondaryHigh => const Color(0xFF6B727E);
+  Color get brand => const Color(0xFF79ACCB);
+  Color get brandHover => const Color(0xFF86B2CC);
+  Color get brandText1 => const Color(0xFF455864);
+  Color get brandText2 => const Color(0xFF4D616C);
+  Color get brandText3 => const Color(0xFF406981);
+  Color get brandDark => const Color(0xFF004E71);
+  Color get roseSoft => const Color(0xBFF3BEC1);
+  Color get shadow => const Color(0x2E282E38);
 }
 
 class _DesignTextStyles {
   const _DesignTextStyles();
 
   TextStyle get displayLarge => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 32,
-        fontWeight: FontWeight.w800,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 32,
+    fontWeight: FontWeight.w800,
+  );
 
   TextStyle get headlineLarge => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 24,
-        fontWeight: FontWeight.w800,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 24,
+    fontWeight: FontWeight.w800,
+  );
 
   TextStyle get headlineMedium => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 22,
-        fontWeight: FontWeight.w700,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
 
   TextStyle get titleLarge => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+  );
 
   TextStyle get bodyLarge => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
 
   TextStyle get bodyMedium => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+  );
 
   TextStyle get bodySmall => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 13,
-        fontWeight: FontWeight.w400,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
 
   TextStyle get labelLarge => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w800,
+  );
 
   TextStyle get cardLabel => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 17,
-        fontWeight: FontWeight.w700,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
 
   TextStyle get button => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w800,
+  );
 
   TextStyle get caption => const TextStyle(
-        fontFamily: DesignTokens.fontFamily,
-        fontSize: 13,
-        fontWeight: FontWeight.w400,
-      );
+    fontFamily: DesignTokens.fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
 }
 
 class _DesignRadii {
@@ -146,22 +117,22 @@ class _DesignShadows {
   const _DesignShadows();
 
   List<BoxShadow> get card => [
-        BoxShadow(
-          color: DesignTokens.colors.shadow,
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: DesignTokens.colors.shadow,
+      blurRadius: 8,
+      offset: const Offset(0, 2),
+      spreadRadius: 0,
+    ),
+  ];
 
   List<BoxShadow> get bar => [
-        BoxShadow(
-          color: DesignTokens.colors.shadow,
-          blurRadius: 6,
-          offset: const Offset(0, 1),
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: DesignTokens.colors.shadow,
+      blurRadius: 6,
+      offset: const Offset(0, 1),
+      spreadRadius: 0,
+    ),
+  ];
 }
 
 class _DesignSpacing {

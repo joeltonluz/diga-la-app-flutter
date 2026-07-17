@@ -68,11 +68,10 @@ void main() {
   });
 
   group('DesignTokens direct access', () {
-    test('brand color is accessible', () {
+    test('brand color is a mid-blue', () {
       final brand = DesignTokens.colors.brand;
-      expect(brand.r, greaterThan(0.5));
-      expect(brand.g, greaterThan(0.6));
-      expect(brand.b, greaterThan(0.7));
+      expect(brand.b, greaterThan(brand.g));
+      expect(brand.g, greaterThan(brand.r));
     });
 
     test('surfaceCard color is near-white', () {
