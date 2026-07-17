@@ -22,18 +22,21 @@ class LearnScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: GridView.count(
           crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
+          mainAxisSpacing: 20,
+          crossAxisSpacing: 20,
           childAspectRatio: 1.2,
           children: sampleCategories.map((category) {
-            return Material(
-              color: DesignTokens.colors.surfaceCard,
-              borderRadius: DesignTokens.radii.card,
-              elevation: 0,
+            return Ink(
+              decoration: BoxDecoration(
+                color: DesignTokens.colors.surfaceCard,
+                borderRadius: DesignTokens.radii.card,
+                boxShadow: DesignTokens.shadows.card,
+              ),
               child: InkWell(
+                borderRadius: DesignTokens.radii.card,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -45,14 +48,8 @@ class LearnScreen extends ConsumerWidget {
                     ),
                   );
                 },
-                borderRadius: DesignTokens.radii.card,
                 child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: DesignTokens.radii.card,
-                    boxShadow: DesignTokens.shadows.card,
-                  ),
-                  constraints: const BoxConstraints(minHeight: 80),
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -63,8 +60,15 @@ class LearnScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         category.name,
-                        style: DesignTokens.textStyles.cardLabel,
+                        style: TextStyle(
+                          fontFamily: DesignTokens.fontFamily,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                          color: DesignTokens.colors.textPrimary,
+                        ),
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
