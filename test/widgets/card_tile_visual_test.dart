@@ -44,6 +44,6 @@ void main() {
       find.descendant(of: cardTileFinder, matching: find.byType(Container)),
     );
     expect(container.constraints?.minWidth, 80);
-    expect(container.constraints?.minHeight, 80);
+    expect(container.constraints?.minHeight, 118);
   });
 }

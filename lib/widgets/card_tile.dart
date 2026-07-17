@@ -25,12 +25,12 @@ class CardTile extends StatelessWidget {
         splashColor: DesignTokens.colors.brand.withValues(alpha: 0.15),
         highlightColor: DesignTokens.colors.brand.withValues(alpha: 0.08),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 80, minWidth: 80),
+          constraints: const BoxConstraints(minHeight: 118, minWidth: 80),
           decoration: BoxDecoration(
             borderRadius: DesignTokens.radii.card,
             boxShadow: DesignTokens.shadows.card,
           ),
-          padding: EdgeInsets.all(DesignTokens.spacing.sm),
+          padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -38,7 +38,7 @@ class CardTile extends StatelessWidget {
                 card.emoji,
                 style: const TextStyle(fontSize: 40),
               ),
-              SizedBox(height: DesignTokens.spacing.xs),
+              const SizedBox(height: 8),
               Text(
                 label ?? card.label,
                 style: DesignTokens.textStyles.cardLabel,
