@@ -40,7 +40,8 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
 
   void _speakSentence() async {
     final languageService = ref.read(languageServiceProvider);
-    for (final card in _sentenceCards) {
+    final cards = _sentenceCards.toList();
+    for (final card in cards) {
       await languageService.speak(card);
     }
   }
@@ -69,9 +70,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
             child: SizedBox(
-              height: isLandscape ? 80 : 104,
+              height: 100,
               child: SentenceBar(
                 cards: _sentenceCards,
                 scrollController: _scrollController,
@@ -83,30 +84,43 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SizedBox(
-              height: 56,
+              height: 64,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _SecondaryButton(
-                    icon: Icons.backspace_rounded,
+                  _ActionButton(
+                    label: '⌫',
+                    fontSize: 22,
                     onTap: hasCards ? _removeLast : null,
+                    flex: 1,
                   ),
-                  ElevatedButton.icon(
-                    onPressed: hasCards ? _speakSentence : null,
-                    icon: const Icon(Icons.play_arrow_rounded),
-                    label: const Text('Falar'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(120, 48),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: hasCards ? _speakSentence : null,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 64),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      child: const Text(
+                        'Falar',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
-                  _SecondaryButton(
-                    icon: Icons.delete_rounded,
+                  const SizedBox(width: 12),
+                  _ActionButton(
+                    label: 'Limpar',
+                    fontSize: 16,
                     onTap: hasCards ? _clearSentence : null,
+                    flex: 1,
                   ),
                 ],
               ),
@@ -115,7 +129,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           const SizedBox(height: 6),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.all(20),
               child: GridView.count(
                 crossAxisCount: 3,
                 mainAxisSpacing: isLandscape ? 10 : 16,
@@ -138,33 +152,51 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
   }
 }
 
-class _SecondaryButton extends StatelessWidget {
-  final IconData icon;
+class _ActionButton extends StatelessWidget {
+  final String label;
+  final double fontSize;
   final VoidCallback? onTap;
+  final int flex;
 
-  const _SecondaryButton({required this.icon, required this.onTap});
+  const _ActionButton({
+    required this.label,
+    required this.fontSize,
+    required this.onTap,
+    this.flex = 1,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isActive = onTap != null;
 
-    return Material(
-      color: isActive
-          ? DesignTokens.colors.borderSoft.withValues(alpha: 0.3)
-          : Colors.transparent,
-      shape: const CircleBorder(),
-      child: InkWell(
+    return Expanded(
+      flex: flex,
+      child: GestureDetector(
         onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 44,
-          height: 44,
-          child: Icon(
-            icon,
-            size: 22,
-            color: isActive
-                ? DesignTokens.colors.textPrimary
-                : DesignTokens.colors.textSecondary.withValues(alpha: 0.3),
+        child: Container(
+          height: 64,
+          decoration: BoxDecoration(
+            color: DesignTokens.colors.surfaceCard,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isActive
+                  ? DesignTokens.colors.borderSoft
+                  : DesignTokens.colors.borderSoft.withValues(alpha: 0.3),
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontFamily: DesignTokens.fontFamily,
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: isActive
+                    ? DesignTokens.colors.textPrimary
+                    : DesignTokens.colors.textSecondary.withValues(alpha: 0.3),
+              ),
+            ),
           ),
         ),
       ),

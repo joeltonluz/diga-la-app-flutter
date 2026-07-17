@@ -42,7 +42,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Apagar 1 — deve restar 1
-    await tester.tap(find.byIcon(Icons.backspace_rounded));
+    await tester.tap(find.text('⌫'));
     await tester.pumpAndSettle();
 
     // O último cartão adicionado foi removido, o primeiro ainda está visível
@@ -53,7 +53,7 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.backspace_rounded));
+    await tester.tap(find.text('⌫'));
     await tester.pumpAndSettle();
 
     // Não deve lançar exceção
@@ -73,7 +73,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Limpar
-    await tester.tap(find.byIcon(Icons.delete_rounded));
+    await tester.tap(find.text('Limpar'));
     await tester.pumpAndSettle();
 
     // A barra está vazia — o SentenceBar exibe placeholder

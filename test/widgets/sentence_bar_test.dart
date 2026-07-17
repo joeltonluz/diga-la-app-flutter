@@ -17,7 +17,7 @@ void main() {
 
   testWidgets('empty bar shows placeholder text', (tester) async {
     await tester.pumpWidget(buildSentenceBar([]));
-    expect(find.text('Toque nos cartões para montar sua frase'), findsOneWidget);
+    expect(find.text('Toque nos cartões para montar uma frase'), findsOneWidget);
   });
 
   testWidgets('bar with cards shows emoji and label', (tester) async {

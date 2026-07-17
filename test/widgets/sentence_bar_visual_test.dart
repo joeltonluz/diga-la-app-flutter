@@ -18,7 +18,7 @@ void main() {
 
     final container = tester.widget<Container>(find.byType(Container).first);
     final decoration = container.decoration as BoxDecoration;
-    expect(decoration.borderRadius, equals(DesignTokens.radii.bar));
+    expect(decoration.borderRadius, equals(const BorderRadius.all(Radius.circular(20))));
   });
 
   testWidgets('SentenceBar uses soft border color from theme', (tester) async {
@@ -27,6 +27,6 @@ void main() {
     final container = tester.widget<Container>(find.byType(Container).first);
     final decoration = container.decoration as BoxDecoration;
     final borderColor = (decoration.border as Border).top.color;
-    expect(borderColor, equals(DesignTokens.colors.borderSoft.withValues(alpha: 0.5)));
+    expect(borderColor, equals(DesignTokens.colors.borderSoft));
   });
 }

@@ -18,28 +18,20 @@ class SentenceBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final hasCards = cards.isNotEmpty;
-    final barHeight = compact ? 80.0 : 104.0;
 
     return Container(
-      height: barHeight,
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: DesignTokens.radii.bar,
+        color: DesignTokens.colors.surfaceCard,
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         border: Border.all(
-          color: hasCards
-              ? DesignTokens.colors.brand.withValues(alpha: 0.25)
-              : DesignTokens.colors.borderSoft.withValues(alpha: 0.5),
-          width: hasCards ? 1.5 : 1,
+          color: DesignTokens.colors.borderSoft,
+          width: 1,
         ),
       ),
-      padding: EdgeInsets.symmetric(
-        horizontal: DesignTokens.spacing.sm,
-        vertical: compact ? DesignTokens.spacing.xs : 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: hasCards
           ? ListView.separated(
               controller: scrollController,
@@ -57,9 +49,12 @@ class SentenceBar extends StatelessWidget {
             )
           : Center(
               child: Text(
-                'Toque nos cartões para montar sua frase',
-                style: DesignTokens.textStyles.caption.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                'Toque nos cartões para montar uma frase',
+                style: TextStyle(
+                  fontFamily: DesignTokens.fontFamily,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400,
+                  color: DesignTokens.colors.textSecondary,
                 ),
               ),
             ),
