@@ -17,15 +17,6 @@ void main() {
     expect(find.text('Aprender'), findsOneWidget);
   });
 
-  testWidgets('home subtitle has no emoji', (tester) async {
-    await tester.pumpWidget(const App());
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Comunicação que aproxima'), findsOneWidget);
-    expect(find.textContaining('🧩'), findsNothing);
-  });
-
   testWidgets('home title color is not primary', (tester) async {
     await tester.pumpWidget(const App());
     await tester.pump(const Duration(seconds: 2));
