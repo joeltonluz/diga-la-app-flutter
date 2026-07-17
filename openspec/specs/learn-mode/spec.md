@@ -31,7 +31,7 @@ The system SHALL ship with exactly five fixed categories, each containing five b
 
 ### Requirement: Category grid (home of learn mode)
 
-The LearnScreen SHALL display a scrollable grid of categories. Each category tile SHALL show the category icon and name. Tapping a category SHALL navigate to its item grid.
+The LearnScreen SHALL display a scrollable grid of categories. Each category tile SHALL show the category icon and name. Tapping a category SHALL navigate to its item grid. The AppBar SHALL have a circular back button and centered title "Aprender". The grid SHALL have exactly 2 columns in any orientation.
 
 #### Scenario: Categories are displayed in a grid
 - **WHEN** the user navigates to the learn mode
@@ -42,9 +42,20 @@ The LearnScreen SHALL display a scrollable grid of categories. Each category til
 - **WHEN** the user taps a category tile
 - **THEN** the app SHALL navigate to a new screen showing the items of that category
 
+#### Scenario: AppBar exibe título Aprender
+- **WHEN** the user navigates to the LearnScreen
+- **THEN** the AppBar title SHALL be "Aprender"
+- **AND** there SHALL be a circular back button visible
+
+#### Scenario: Grade tem 2 colunas fixas
+- **WHEN** the LearnScreen is rendered in portrait
+- **THEN** the GridView SHALL have crossAxisCount equal to 2
+- **WHEN** the LearnScreen is rendered in landscape
+- **THEN** the GridView SHALL have crossAxisCount equal to 2
+
 ### Requirement: Item grid
 
-The item grid screen SHALL display all vocabulary items of the selected category using the existing `CardTile` widget. Tapping an item SHALL call `LanguageService.speak(card)`.
+The item grid screen SHALL display all vocabulary items of the selected category using the existing `CardTile` widget. Tapping an item SHALL call `LanguageService.speak(card)`. The grid SHALL have exactly 3 columns in any orientation.
 
 #### Scenario: Items use CardTile widget
 - **WHEN** the item grid is displayed
@@ -54,13 +65,18 @@ The item grid screen SHALL display all vocabulary items of the selected category
 - **WHEN** the user taps an item in the item grid
 - **THEN** the system SHALL call `LanguageService.speak(card)` with the tapped card
 
+#### Scenario: Grade tem 3 colunas fixas
+- **WHEN** the CategoryGridScreen is rendered
+- **THEN** the GridView SHALL have crossAxisCount equal to 3
+
 ### Requirement: Back navigation
 
-The item grid screen SHALL provide a clear way to return to the category grid, such as a back button in the AppBar.
+The item grid screen SHALL provide a clear way to return to the category grid. The AppBar SHALL have a circular back button on the left and the category name centered as title.
 
 #### Scenario: Back button returns to categories
 - **WHEN** the user is on the item grid screen
-- **THEN** the AppBar SHALL display a back button
+- **THEN** the AppBar SHALL display a circular back button
+- **THEN** the AppBar title SHALL be the category name, centered
 - **WHEN** the user taps the back button
 - **THEN** the app SHALL return to the category grid
 
