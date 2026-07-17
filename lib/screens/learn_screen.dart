@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/sample_categories.dart';
 import '../providers/language_provider.dart';
+import '../theme/design_tokens.dart';
 import 'category_grid_screen.dart';
 
 class LearnScreen extends ConsumerWidget {
@@ -29,9 +30,9 @@ class LearnScreen extends ConsumerWidget {
               childAspectRatio: cellRatio,
               children: sampleCategories.map((category) {
                 return Material(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  elevation: 1,
+                  color: DesignTokens.colors.surfaceCard,
+                  borderRadius: DesignTokens.radii.card,
+                  elevation: 0,
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
@@ -44,8 +45,12 @@ class LearnScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: DesignTokens.radii.card,
                     child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: DesignTokens.radii.card,
+                        boxShadow: DesignTokens.shadows.card,
+                      ),
                       constraints: const BoxConstraints(minHeight: 80),
                       padding: const EdgeInsets.all(12),
                       child: Column(

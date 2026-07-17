@@ -4,6 +4,7 @@ import '../models/voice.dart';
 import '../providers/language_provider.dart';
 import '../providers/voice_provider.dart';
 import '../services/language_service.dart';
+import '../theme/design_tokens.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -169,7 +170,7 @@ class _VoiceCard extends StatelessWidget {
     final theme = Theme.of(context);
     final color = isSelected
         ? theme.colorScheme.primary
-        : theme.colorScheme.outline.withValues(alpha: 0.3);
+        : DesignTokens.colors.borderSoft;
 
     return GestureDetector(
       onTap: onTap,
@@ -179,8 +180,8 @@ class _VoiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primary.withValues(alpha: 0.08)
-              : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
+              : DesignTokens.colors.surfaceCard,
+          borderRadius: DesignTokens.radii.card,
           border: Border.all(
             color: color,
             width: isSelected ? 2 : 1.5,
@@ -321,7 +322,7 @@ class _RateCard extends StatelessWidget {
     final theme = Theme.of(context);
     final color = isSelected
         ? theme.colorScheme.primary
-        : theme.colorScheme.outline.withValues(alpha: 0.3);
+        : DesignTokens.colors.borderSoft;
 
     return GestureDetector(
       onTap: onTap,
@@ -331,8 +332,8 @@ class _RateCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primary.withValues(alpha: 0.08)
-              : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
+              : DesignTokens.colors.surfaceCard,
+          borderRadius: DesignTokens.radii.card,
           border: Border.all(
             color: color,
             width: isSelected ? 2 : 1.5,
@@ -427,7 +428,7 @@ class _ModeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = isSelected ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.3);
+    final color = isSelected ? theme.colorScheme.primary : DesignTokens.colors.borderSoft;
 
     return GestureDetector(
       onTap: onTap,
@@ -437,8 +438,8 @@ class _ModeCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primary.withValues(alpha: 0.08)
-              : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
+              : DesignTokens.colors.surfaceCard,
+          borderRadius: DesignTokens.radii.card,
           border: Border.all(
             color: color,
             width: isSelected ? 2 : 1.5,

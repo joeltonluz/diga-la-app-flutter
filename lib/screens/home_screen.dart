@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/design_tokens.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -39,14 +40,14 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       'Diga Lá',
                       style: theme.textTheme.displayLarge?.copyWith(
-                        color: theme.colorScheme.primary,
+                        color: DesignTokens.colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Comunicação que aproxima. 🧩',
+                      'Comunicação que aproxima',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                        color: DesignTokens.colors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 48),
@@ -62,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
+                      child: OutlinedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/learn');
                         },

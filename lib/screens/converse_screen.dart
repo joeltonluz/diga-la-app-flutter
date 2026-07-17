@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../data/sample_cards.dart';
 import '../models/card.dart';
 import '../providers/language_provider.dart';
+import '../theme/design_tokens.dart';
 import '../widgets/card_tile.dart';
 import '../widgets/sentence_bar.dart';
 
@@ -56,9 +58,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Modo Conversar'),
-      ),
+      appBar: AppBar(title: const Text('Modo Conversar')),
       body: Column(
         children: [
           Padding(
@@ -95,7 +95,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                         boxShadow: hasCards
                             ? [
                                 BoxShadow(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -107,7 +109,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                         size: hasCards ? 30 : 24,
                         color: hasCards
                             ? theme.colorScheme.onPrimary
-                            : theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                            : theme.colorScheme.onSurface.withValues(
+                                alpha: 0.3,
+                              ),
                       ),
                     ),
                   ),
@@ -128,7 +132,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                 builder: (context, constraints) {
                   final cellRatio = isLandscape ? 1.4 : 1.0;
                   return GridView.count(
-                    crossAxisCount: 2,
+                    crossAxisCount: 3,
                     mainAxisSpacing: isLandscape ? 10 : 16,
                     crossAxisSpacing: isLandscape ? 10 : 16,
                     childAspectRatio: cellRatio,
@@ -154,19 +158,15 @@ class _SecondaryButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const _SecondaryButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _SecondaryButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isActive = onTap != null;
 
     return Material(
       color: isActive
-          ? theme.colorScheme.surfaceContainerHighest
+          ? DesignTokens.colors.borderSoft.withValues(alpha: 0.3)
           : Colors.transparent,
       shape: const CircleBorder(),
       child: InkWell(
@@ -179,8 +179,8 @@ class _SecondaryButton extends StatelessWidget {
             icon,
             size: 22,
             color: isActive
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurface.withValues(alpha: 0.15),
+                ? DesignTokens.colors.textPrimary
+                : DesignTokens.colors.textSecondary.withValues(alpha: 0.3),
           ),
         ),
       ),
