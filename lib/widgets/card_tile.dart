@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Card;
 import '../models/card.dart';
+import '../theme/design_tokens.dart';
 
 class CardTile extends StatelessWidget {
   final Card card;
@@ -15,20 +16,21 @@ class CardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Material(
-      color: theme.colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      elevation: 1,
+      color: DesignTokens.colors.surfaceCard,
+      borderRadius: DesignTokens.radii.card,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        splashColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-        highlightColor: theme.colorScheme.primary.withValues(alpha: 0.08),
+        borderRadius: DesignTokens.radii.card,
+        splashColor: DesignTokens.colors.brand.withValues(alpha: 0.15),
+        highlightColor: DesignTokens.colors.brand.withValues(alpha: 0.08),
         child: Container(
           constraints: const BoxConstraints(minHeight: 80, minWidth: 80),
-          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: DesignTokens.radii.card,
+            boxShadow: DesignTokens.shadows.card,
+          ),
+          padding: EdgeInsets.all(DesignTokens.spacing.sm),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -36,12 +38,10 @@ class CardTile extends StatelessWidget {
                 card.emoji,
                 style: const TextStyle(fontSize: 40),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: DesignTokens.spacing.xs),
               Text(
                 label ?? card.label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: DesignTokens.textStyles.cardLabel,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
               ),

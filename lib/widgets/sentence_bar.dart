@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Card;
 import '../models/card.dart';
+import '../theme/design_tokens.dart';
 
 class SentenceBar extends StatelessWidget {
   final List<Card> cards;
@@ -27,24 +28,24 @@ class SentenceBar extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: DesignTokens.radii.bar,
         border: Border.all(
           color: hasCards
-              ? theme.colorScheme.primary.withValues(alpha: 0.25)
-              : theme.colorScheme.outline.withValues(alpha: 0.1),
+              ? DesignTokens.colors.brand.withValues(alpha: 0.25)
+              : DesignTokens.colors.borderSoft.withValues(alpha: 0.5),
           width: hasCards ? 1.5 : 1,
         ),
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: compact ? 6 : 10,
+        horizontal: DesignTokens.spacing.sm,
+        vertical: compact ? DesignTokens.spacing.xs : 10,
       ),
       child: hasCards
           ? ListView.separated(
               controller: scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: cards.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
+              separatorBuilder: (_, _) => SizedBox(width: DesignTokens.spacing.xs),
               itemBuilder: (context, index) {
                 final card = cards[index];
                 return _MiniCard(
@@ -57,9 +58,8 @@ class SentenceBar extends StatelessWidget {
           : Center(
               child: Text(
                 'Toque nos cartões para montar sua frase',
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: DesignTokens.textStyles.caption.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
-                  fontSize: compact ? 12 : 13,
                 ),
               ),
             ),
@@ -76,16 +76,14 @@ class _MiniCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       width: compact ? 56 : 72,
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
+        color: DesignTokens.colors.surfaceCard,
+        borderRadius: DesignTokens.radii.mini,
         border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.12),
+          color: DesignTokens.colors.borderSoft.withValues(alpha: 0.4),
         ),
       ),
       child: Column(
@@ -95,7 +93,7 @@ class _MiniCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label ?? card.label,
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: DesignTokens.textStyles.caption.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: compact ? 9 : 10,
             ),

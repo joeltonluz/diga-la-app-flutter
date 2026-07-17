@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Card;
-import 'package:flutter_test/flutter_test.dart' hide Card;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:diga_la_app/models/card.dart';
 import 'package:diga_la_app/widgets/sentence_bar.dart';
 

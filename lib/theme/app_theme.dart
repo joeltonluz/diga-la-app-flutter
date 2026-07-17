@@ -1,43 +1,71 @@
 import 'package:flutter/material.dart';
+import 'design_tokens.dart';
 
 class AppTheme {
   AppTheme._();
 
   static ThemeData regular() {
-    const colorScheme = ColorScheme.light(
-      primary: Color(0xFF6B8E9B),
-      onPrimary: Color(0xFFFFFFFF),
-      secondary: Color(0xFFD4A5A5),
-      onSecondary: Color(0xFFFFFFFF),
-      surface: Color(0xFFF5F0E8),
-      onSurface: Color(0xFF2C2C2C),
-      error: Color(0xFFBA1A1A),
-      onError: Color(0xFFFFFFFF),
+    final colors = DesignTokens.colors;
+
+    final colorScheme = ColorScheme.light(
+      primary: colors.brand,
+      onPrimary: colors.surfaceCard,
+      secondary: Color.from(alpha: 1.0, red: 0.851, green: 0.627, blue: 0.627),
+      onSecondary: colors.surfaceCard,
+      surface: colors.surfaceCard,
+      onSurface: colors.textPrimary,
+      error: Color.from(alpha: 1.0, red: 0.729, green: 0.102, blue: 0.102),
+      onError: colors.surfaceCard,
     );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(fontSize: 18),
-        bodyMedium: TextStyle(fontSize: 18),
-        labelLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+      fontFamily: DesignTokens.fontFamily,
+      scaffoldBackgroundColor: colors.backgroundExternal,
+      textTheme: TextTheme(
+        displayLarge: DesignTokens.textStyles.displayLarge,
+        headlineLarge: DesignTokens.textStyles.headlineLarge,
+        headlineMedium: DesignTokens.textStyles.headlineMedium,
+        titleLarge: DesignTokens.textStyles.titleLarge,
+        bodyLarge: DesignTokens.textStyles.bodyLarge,
+        bodyMedium: DesignTokens.textStyles.bodyMedium,
+        bodySmall: DesignTokens.textStyles.bodySmall,
+        labelLarge: DesignTokens.textStyles.labelLarge,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
+          backgroundColor: colors.brand,
+          foregroundColor: colors.surfaceCard,
           minimumSize: const Size(double.infinity, 56),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: DesignTokens.radii.button,
           ),
-          textStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          textStyle: DesignTokens.textStyles.button,
         ),
       ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: colors.brand,
+          side: BorderSide(color: colors.brand),
+          minimumSize: const Size(double.infinity, 56),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: DesignTokens.radii.button,
+          ),
+          textStyle: DesignTokens.textStyles.button,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: DesignTokens.radii.card,
+        ),
+        color: colors.surfaceCard,
+      ),
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
