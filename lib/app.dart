@@ -5,6 +5,7 @@ import 'screens/converse_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
 class App extends StatelessWidget {
@@ -16,8 +17,9 @@ class App extends StatelessWidget {
       child: MaterialApp(
         title: 'Diga Lá',
         theme: AppTheme.regular(),
-        initialRoute: '/',
+        initialRoute: '/splash',
         routes: {
+          '/splash': (context) => const SplashScreen(),
           '/': (context) => const HomeScreen(),
           '/converse': (context) => const ConverseScreen(),
           '/learn': (context) => const LearnScreen(),
