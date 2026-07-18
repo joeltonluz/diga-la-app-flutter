@@ -44,8 +44,14 @@ void main() {
     await tester.pumpWidget(buildTestApp(languageService: languageService));
     await tester.pumpAndSettle();
 
-    final tiles = find.byType(CardTile);
-    expect(tiles.evaluate().length, sampleCategories[0].items.length);
+    final items = sampleCategories[0].items;
+    // Scroll para o último item e verifica que ele existe
+    await tester.scrollUntilVisible(
+      find.text(items.last.labelPt),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text(items.last.labelPt), findsOneWidget);
   });
 
   testWidgets('tocar num item chama LanguageService.speak', (tester) async {

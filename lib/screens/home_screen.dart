@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 import '../theme/design_tokens.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -39,7 +41,8 @@ class HomeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
+              minHeight:
+                  MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top -
                   kToolbarHeight -
                   MediaQuery.of(context).padding.bottom,
@@ -123,6 +126,21 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const Spacer(flex: 2),
+                    FutureBuilder<PackageInfo>(
+                      future: PackageInfo.fromPlatform(),
+                      builder: (context, snapshot) {
+                        final version = snapshot.data?.version ?? '';
+                        return Text(
+                          version,
+                          style: TextStyle(
+                            fontFamily: DesignTokens.fontFamily,
+                            fontSize: 12,
+                            color: DesignTokens.colors.textSecondary,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),

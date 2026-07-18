@@ -31,12 +31,17 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('grade contém as 5 categorias esperadas', (tester) async {
+  testWidgets('grade contém todas as categorias esperadas', (tester) async {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
     for (final category in sampleCategories) {
-      expect(find.text(category.name, skipOffstage: false), findsWidgets);
+      await tester.scrollUntilVisible(
+        find.text(category.name),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text(category.name), findsOneWidget);
     }
   });
 

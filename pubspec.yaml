@@ -15,6 +15,7 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   shared_preferences: ^2.3.5
+  package_info_plus: ^10.2.1
 
 dev_dependencies:
   flutter_test:
@@ -26,8 +27,13 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: true
-  ios: false
+  ios: true
   image_path: "assets/logo.png"
+  adaptive_icon_background: "#79ACCB"
+  adaptive_icon_foreground: "assets/logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  background_color_ios: "#79ACCB"
 
 flutter:
   uses-material-design: true
