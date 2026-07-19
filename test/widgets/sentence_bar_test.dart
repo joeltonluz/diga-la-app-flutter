@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart' hide Card;
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:diga_la_app/models/card.dart';
+import 'package:diga_la_app/domain/entities/pictogram_card.dart';
 import 'package:diga_la_app/widgets/sentence_bar.dart';
 
 void main() {
-  const card1 = Card(id: 'a', labelPt: 'água', labelEn: 'water', emoji: '💧');
-  const card2 = Card(id: 'b', labelPt: 'casa', labelEn: 'home', emoji: '🏠');
+  const card1 = PictogramCard(id: 'a', labelPt: 'água', labelEn: 'water', emoji: '💧');
+  const card2 = PictogramCard(id: 'b', labelPt: 'casa', labelEn: 'home', emoji: '🏠');
 
-  Widget buildSentenceBar(List<Card> cards) {
+  Widget buildSentenceBar(List<PictogramCard> cards) {
     return MaterialApp(
       home: Scaffold(
         body: SentenceBar(cards: cards),

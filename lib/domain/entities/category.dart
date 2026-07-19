@@ -1,10 +1,10 @@
-import 'card.dart';
+import 'pictogram_card.dart';
 
 class Category {
   final String id;
   final String name;
   final String icon;
-  final List<Card> items;
+  final List<PictogramCard> items;
 
   const Category({
     required this.id,

@@ -75,12 +75,12 @@ class HomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(24),
                           ),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('💬', style: TextStyle(fontSize: 28)),
-                            const SizedBox(width: 14),
-                            const Text(
+                            Text('💬', style: TextStyle(fontSize: 28)),
+                            SizedBox(width: 14),
+                            Text(
                               'Conversar',
                               style: TextStyle(
                                 fontSize: 26,

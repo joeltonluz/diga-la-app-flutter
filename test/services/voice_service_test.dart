@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:diga_la_app/models/voice.dart';
+import 'package:diga_la_app/domain/entities/voice.dart';
 import 'package:diga_la_app/services/language_service.dart';
 import 'package:diga_la_app/services/voice_service.dart';
 import '../helpers/mocks.dart';
@@ -10,13 +9,15 @@ void main() {
   setUpAll(() {
     registerFallbackValue(const Voice(name: '', locale: ''));
   });
+
   late MockTtsService mockTts;
   late LanguageService languageService;
+  late InMemorySettingsRepository settings;
 
   setUp(() {
-    SharedPreferences.setMockInitialValues({});
+    settings = InMemorySettingsRepository();
     mockTts = MockTtsService();
-    languageService = LanguageService(mockTts);
+    languageService = LanguageService(mockTts, settings);
 
     when(() => mockTts.getVoices()).thenAnswer((_) async => []);
     when(() => mockTts.setVoice(any())).thenAnswer((_) async {});
@@ -27,7 +28,7 @@ void main() {
   });
 
   group('getVoices', () {
-    test('filters by pt-BR and returns max 5 with Wavenet first', () async {
+    test('filters by pt-BR and returns all with Wavenet first', () async {
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Standard-C', locale: 'pt-BR'),
             const Voice(name: 'pt-BR-Standard-A', locale: 'pt-BR'),
@@ -38,10 +39,10 @@ void main() {
             const Voice(name: 'pt-BR-Standard-B', locale: 'pt-BR'),
           ]);
 
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
-      expect(service.voices.length, lessThanOrEqualTo(5));
+      expect(service.voices.length, 6);
       expect(service.voices, everyElement((Voice v) => v.locale == 'pt-BR'));
 
       expect(service.voices[0].name, 'pt-BR-Wavenet-A');
@@ -49,12 +50,13 @@ void main() {
       expect(service.voices[2].name, 'pt-BR-Neural-A');
       expect(service.voices[3].name, 'pt-BR-Standard-A');
       expect(service.voices[4].name, 'pt-BR-Standard-B');
+      expect(service.voices[5].name, 'pt-BR-Standard-C');
     });
 
     test('returns empty when no voices available', () async {
       when(() => mockTts.getVoices()).thenAnswer((_) async => []);
 
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       expect(service.voices, isEmpty);
@@ -62,44 +64,62 @@ void main() {
   });
 
   group('selectVoice', () {
-    test('persists voice name to SharedPreferences and sets on TTS', () async {
+    test('persists voice name to SettingsRepository and sets on TTS', () async {
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
           ]);
       const voice = Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR');
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       await service.selectVoice(voice);
 
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('voiceName'), 'pt-BR-Wavenet-A');
+      final saved = await settings.getVoiceName();
+      expect(saved, 'pt-BR-Wavenet-A');
       verify(() => mockTts.setVoice(voice)).called(2);
     });
   });
 
   group('init restore', () {
     test('restores saved voice when it exists in current list', () async {
-      SharedPreferences.setMockInitialValues({'voiceName': 'pt-BR-Wavenet-A'});
+      settings = InMemorySettingsRepository();
+      await settings.setVoiceName('pt-BR-Wavenet-A');
+      mockTts = MockTtsService();
+      languageService = LanguageService(mockTts, settings);
+
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Standard-A', locale: 'pt-BR'),
             const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
           ]);
+      when(() => mockTts.setVoice(any())).thenAnswer((_) async {});
+      when(() => mockTts.setSpeechRate(any())).thenAnswer((_) async {});
+      when(() => mockTts.speechRate).thenReturn(0.35);
+      when(() => mockTts.speak(any())).thenAnswer((_) async {});
+      when(() => mockTts.stop()).thenAnswer((_) async {});
 
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       expect(service.selectedVoice?.name, 'pt-BR-Wavenet-A');
     });
 
     test('falls back to first voice when saved voice is missing', () async {
-      SharedPreferences.setMockInitialValues({'voiceName': 'pt-BR-Wavenet-A'});
+      settings = InMemorySettingsRepository();
+      await settings.setVoiceName('pt-BR-Wavenet-A');
+      mockTts = MockTtsService();
+      languageService = LanguageService(mockTts, settings);
+
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Standard-A', locale: 'pt-BR'),
             const Voice(name: 'pt-BR-Standard-B', locale: 'pt-BR'),
           ]);
+      when(() => mockTts.setVoice(any())).thenAnswer((_) async {});
+      when(() => mockTts.setSpeechRate(any())).thenAnswer((_) async {});
+      when(() => mockTts.speechRate).thenReturn(0.35);
+      when(() => mockTts.speak(any())).thenAnswer((_) async {});
+      when(() => mockTts.stop()).thenAnswer((_) async {});
 
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       expect(service.selectedVoice?.name, 'pt-BR-Standard-A');
@@ -112,32 +132,41 @@ void main() {
             const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
           ]);
 
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       expect(service.speechRate, 0.35);
     });
 
-    test('setSpeechRate persists to SharedPreferences', () async {
+    test('setSpeechRate persists to SettingsRepository', () async {
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
           ]);
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       await service.setSpeechRate(0.45);
 
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getDouble('speechRate'), 0.45);
+      final saved = await settings.getSpeechRate();
+      expect(saved, 0.45);
     });
 
     test('corrupted persisted value falls back to 0.35', () async {
-      SharedPreferences.setMockInitialValues({'speechRate': 0.0});
+      settings = InMemorySettingsRepository();
+      await settings.setSpeechRate(0.0);
+      mockTts = MockTtsService();
+      languageService = LanguageService(mockTts, settings);
+
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
           ]);
+      when(() => mockTts.setVoice(any())).thenAnswer((_) async {});
+      when(() => mockTts.setSpeechRate(any())).thenAnswer((_) async {});
+      when(() => mockTts.speechRate).thenReturn(0.35);
+      when(() => mockTts.speak(any())).thenAnswer((_) async {});
+      when(() => mockTts.stop()).thenAnswer((_) async {});
 
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       expect(service.speechRate, 0.35);
@@ -147,7 +176,7 @@ void main() {
       when(() => mockTts.getVoices()).thenAnswer((_) async => [
             const Voice(name: 'pt-BR-Wavenet-A', locale: 'pt-BR'),
           ]);
-      final service = VoiceService(mockTts, languageService);
+      final service = VoiceService(mockTts, languageService, settings);
       await service.ready;
 
       await service.setSpeechRate(0.45);

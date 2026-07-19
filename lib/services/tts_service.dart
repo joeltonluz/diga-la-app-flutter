@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
-import '../models/voice.dart';
+import '../domain/entities/voice.dart';
 
 class TtsService {
   final FlutterTts _tts;

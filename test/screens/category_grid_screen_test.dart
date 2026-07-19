@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:diga_la_app/data/sample_categories.dart';
+import 'package:diga_la_app/data/datasources/sample_categories.dart';
 import 'package:diga_la_app/providers/language_provider.dart';
 import 'package:diga_la_app/screens/category_grid_screen.dart';
 import 'package:diga_la_app/services/language_service.dart';
@@ -18,17 +17,12 @@ Widget buildTestApp({required LanguageService languageService}) {
     child: MaterialApp(
       home: CategoryGridScreen(
         category: sampleCategories[0],
-        languageService: languageService,
       ),
     ),
   );
 }
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-  });
-
   MockTtsService createMockTts() {
     final tts = MockTtsService();
     when(() => tts.setLanguage(any())).thenAnswer((_) async {});
@@ -39,13 +33,13 @@ void main() {
 
   testWidgets('itens da categoria renderizam com CardTile', (tester) async {
     final tts = createMockTts();
-    final languageService = LanguageService(tts);
+    final settings = InMemorySettingsRepository();
+    final languageService = LanguageService(tts, settings);
 
     await tester.pumpWidget(buildTestApp(languageService: languageService));
     await tester.pumpAndSettle();
 
     final items = sampleCategories[0].items;
-    // Scroll para o último item e verifica que ele existe
     await tester.scrollUntilVisible(
       find.text(items.last.labelPt),
       200,
@@ -56,7 +50,8 @@ void main() {
 
   testWidgets('tocar num item chama LanguageService.speak', (tester) async {
     final tts = createMockTts();
-    final languageService = LanguageService(tts);
+    final settings = InMemorySettingsRepository();
+    final languageService = LanguageService(tts, settings);
 
     await tester.pumpWidget(buildTestApp(languageService: languageService));
     await tester.pumpAndSettle();
@@ -64,13 +59,13 @@ void main() {
     await tester.tap(find.byType(CardTile).first);
     await tester.pumpAndSettle();
 
-    // O teste verifica que não lançou exceção
     expect(find.byType(CategoryGridScreen), findsOneWidget);
   });
 
   testWidgets('AppBar tem nome da categoria', (tester) async {
     final tts = createMockTts();
-    final languageService = LanguageService(tts);
+    final settings = InMemorySettingsRepository();
+    final languageService = LanguageService(tts, settings);
 
     await tester.pumpWidget(buildTestApp(languageService: languageService));
     await tester.pumpAndSettle();
@@ -80,7 +75,8 @@ void main() {
 
   testWidgets('GridView tem crossAxisCount igual a 3', (tester) async {
     final tts = createMockTts();
-    final languageService = LanguageService(tts);
+    final settings = InMemorySettingsRepository();
+    final languageService = LanguageService(tts, settings);
 
     await tester.pumpWidget(buildTestApp(languageService: languageService));
     await tester.pumpAndSettle();

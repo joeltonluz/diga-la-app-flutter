@@ -5,16 +5,16 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData regular() {
-    final colors = DesignTokens.colors;
+    const colors = DesignTokens.colors;
 
     final colorScheme = ColorScheme.light(
       primary: colors.brand,
       onPrimary: colors.surfaceCard,
-      secondary: Color.from(alpha: 1.0, red: 0.851, green: 0.627, blue: 0.627),
+      secondary: const Color.from(alpha: 1.0, red: 0.851, green: 0.627, blue: 0.627),
       onSecondary: colors.surfaceCard,
       surface: colors.surfaceCard,
       onSurface: colors.textPrimary,
-      error: Color.from(alpha: 1.0, red: 0.729, green: 0.102, blue: 0.102),
+      error: const Color.from(alpha: 1.0, red: 0.729, green: 0.102, blue: 0.102),
       onError: colors.surfaceCard,
     );
 

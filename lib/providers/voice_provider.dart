@@ -5,5 +5,6 @@ import 'language_provider.dart';
 final voiceServiceProvider = ChangeNotifierProvider<VoiceService>((ref) {
   final languageService = ref.read(languageServiceProvider);
   final tts = ref.read(ttsServiceProvider);
-  return VoiceService(tts, languageService);
+  final settings = ref.read(settingsRepositoryProvider);
+  return VoiceService(tts, languageService, settings);
 });

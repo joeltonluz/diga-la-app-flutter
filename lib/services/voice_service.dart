@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/voice.dart';
+import '../domain/entities/voice.dart';
+import '../domain/repositories/settings_repository.dart';
 import 'language_service.dart';
 import 'tts_service.dart';
 
 class VoiceService extends ChangeNotifier {
   final TtsService _tts;
   final LanguageService _languageService;
+  final SettingsRepository _settingsRepository;
   List<Voice> _allTtsVoices = [];
   List<Voice> _filteredVoices = [];
   Voice? _selectedVoice;
@@ -21,7 +22,7 @@ class VoiceService extends ChangeNotifier {
   double get speechRate => _speechRate;
   Future<void> get ready => _ready.future;
 
-  VoiceService(this._tts, this._languageService) {
+  VoiceService(this._tts, this._languageService, this._settingsRepository) {
     _languageService.addListener(_onLanguageChanged);
     _init();
   }
@@ -30,6 +31,7 @@ class VoiceService extends ChangeNotifier {
     await _loadRate();
     await _loadAndFilter();
     _ready.complete();
+    notifyListeners();
   }
 
   Future<void> _onLanguageChanged() async {
@@ -39,8 +41,7 @@ class VoiceService extends ChangeNotifier {
   }
 
   Future<void> _loadRate() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getDouble('speechRate');
+    final saved = await _settingsRepository.getSpeechRate();
     if (saved != null && saved >= 0.01 && saved <= 1.0) {
       _speechRate = saved;
     }
@@ -68,8 +69,7 @@ class VoiceService extends ChangeNotifier {
   Future<void> setSpeechRate(double rate) async {
     _speechRate = rate;
     await _tts.setSpeechRate(rate);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('speechRate', rate);
+    await _settingsRepository.setSpeechRate(rate);
     notifyListeners();
   }
 
@@ -77,7 +77,7 @@ class VoiceService extends ChangeNotifier {
     final locale = mode == LanguageMode.pt ? 'pt-BR' : 'en-US';
     final filtered = all.where((v) => v.locale == locale).toList();
     filtered.sort(_compareVoices);
-    return filtered.take(5).toList();
+    return filtered;
   }
 
   int _compareVoices(Voice a, Voice b) {
@@ -102,8 +102,7 @@ class VoiceService extends ChangeNotifier {
   Future<void> selectVoice(Voice voice) async {
     _selectedVoice = voice;
     await _tts.setVoice(voice);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('voiceName', voice.name);
+    await _settingsRepository.setVoiceName(voice.name);
     notifyListeners();
   }
 
@@ -123,8 +122,7 @@ class VoiceService extends ChangeNotifier {
   }
 
   Future<void> _restoreOrFallback() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedName = prefs.getString('voiceName');
+    final savedName = await _settingsRepository.getVoiceName();
 
     if (savedName != null) {
       final match = _filteredVoices.where((v) => v.name == savedName);

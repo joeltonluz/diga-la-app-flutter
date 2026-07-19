@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:diga_la_app/models/card.dart';
+import 'package:diga_la_app/domain/entities/pictogram_card.dart';
 
 void main() {
-  const card = Card(
+  const card = PictogramCard(
     id: 'test',
     labelPt: 'água',
     labelEn: 'water',

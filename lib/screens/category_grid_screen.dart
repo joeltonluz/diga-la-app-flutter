@@ -1,20 +1,21 @@
-import 'package:flutter/material.dart' hide Card;
-import '../models/category.dart';
-import '../services/language_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../domain/entities/category.dart';
+import '../providers/language_provider.dart';
 import '../widgets/card_tile.dart';
 
-class CategoryGridScreen extends StatelessWidget {
+class CategoryGridScreen extends ConsumerWidget {
   final Category category;
-  final LanguageService languageService;
 
   const CategoryGridScreen({
     super.key,
     required this.category,
-    required this.languageService,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final languageService = ref.watch(languageServiceProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -30,7 +31,6 @@ class CategoryGridScreen extends StatelessWidget {
           crossAxisCount: 3,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1.0,
           children: category.items.map((card) {
             return CardTile(
               card: card,

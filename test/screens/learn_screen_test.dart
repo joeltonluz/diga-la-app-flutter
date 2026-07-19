@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:diga_la_app/data/sample_categories.dart';
+import 'package:diga_la_app/data/datasources/sample_categories.dart';
 import 'package:diga_la_app/providers/language_provider.dart';
 import 'package:diga_la_app/screens/category_grid_screen.dart';
 import 'package:diga_la_app/screens/learn_screen.dart';
@@ -11,7 +10,8 @@ import '../helpers/mocks.dart';
 
 Widget buildTestApp() {
   final tts = MockTtsService();
-  final languageService = LanguageService(tts);
+  final settings = InMemorySettingsRepository();
+  final languageService = LanguageService(tts, settings);
 
   return ProviderScope(
     overrides: [
@@ -27,10 +27,6 @@ Widget buildTestApp() {
 }
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-  });
-
   testWidgets('grade contém todas as categorias esperadas', (tester) async {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();

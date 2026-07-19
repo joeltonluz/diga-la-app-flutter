@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart' hide Card;
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:diga_la_app/models/card.dart';
+import 'package:diga_la_app/domain/entities/pictogram_card.dart';
 import 'package:diga_la_app/theme/design_tokens.dart';
 import 'package:diga_la_app/widgets/sentence_bar.dart';
 
 void main() {
-  Widget buildSentenceBar({List<Card> cards = const []}) {
+  Widget buildSentenceBar({List<PictogramCard> cards = const []}) {
     return MaterialApp(
       home: Scaffold(
         body: SentenceBar(cards: cards),

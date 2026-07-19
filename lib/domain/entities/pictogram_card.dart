@@ -1,10 +1,10 @@
-class Card {
+class PictogramCard {
   final String id;
   final String labelPt;
   final String labelEn;
   final String emoji;
 
-  const Card({
+  const PictogramCard({
     required this.id,
     required this.labelPt,
     required this.labelEn,

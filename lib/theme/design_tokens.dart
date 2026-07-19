@@ -5,11 +5,11 @@ class DesignTokens {
 
   static const fontFamily = 'Nunito';
 
-  static final colors = _DesignColors();
-  static final textStyles = _DesignTextStyles();
-  static final radii = _DesignRadii();
-  static final shadows = _DesignShadows();
-  static final spacing = _DesignSpacing();
+  static const colors = _DesignColors();
+  static const textStyles = _DesignTextStyles();
+  static const radii = _DesignRadii();
+  static const shadows = _DesignShadows();
+  static const spacing = _DesignSpacing();
 }
 
 class _DesignColors {
@@ -121,7 +121,6 @@ class _DesignShadows {
       color: DesignTokens.colors.shadow,
       blurRadius: 8,
       offset: const Offset(0, 2),
-      spreadRadius: 0,
     ),
   ];
 
@@ -130,7 +129,6 @@ class _DesignShadows {
       color: DesignTokens.colors.shadow,
       blurRadius: 6,
       offset: const Offset(0, 1),
-      spreadRadius: 0,
     ),
   ];
 }

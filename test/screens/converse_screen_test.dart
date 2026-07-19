@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:diga_la_app/data/sample_cards.dart';
+import 'package:diga_la_app/data/datasources/sample_cards.dart';
 import 'package:diga_la_app/providers/language_provider.dart';
 import 'package:diga_la_app/screens/converse_screen.dart';
 import 'package:diga_la_app/services/language_service.dart';
@@ -10,8 +9,8 @@ import 'package:diga_la_app/widgets/card_tile.dart';
 import '../helpers/mocks.dart';
 
 Widget buildTestApp({LanguageService? languageService}) {
-  final ls =
-      languageService ?? LanguageService(MockTtsService());
+  final settings = InMemorySettingsRepository();
+  final ls = languageService ?? LanguageService(MockTtsService(), settings);
 
   return ProviderScope(
     overrides: [
@@ -24,15 +23,10 @@ Widget buildTestApp({LanguageService? languageService}) {
 }
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-  });
-
   testWidgets('apagar remove o último cartão da frase', (tester) async {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    // Adicionar 2 cartões tocando nos primeiros cards da grid
     final firstCard = find.text(sampleCards[0].labelPt).last;
     await tester.tap(firstCard);
     await tester.pumpAndSettle();
@@ -41,11 +35,9 @@ void main() {
     await tester.tap(secondCard);
     await tester.pumpAndSettle();
 
-    // Apagar 1 — deve restar 1
     await tester.tap(find.text('⌫'));
     await tester.pumpAndSettle();
 
-    // O último cartão adicionado foi removido, o primeiro ainda está visível
     expect(find.text(sampleCards[0].labelPt), findsWidgets);
   });
 
@@ -56,7 +48,6 @@ void main() {
     await tester.tap(find.text('⌫'));
     await tester.pumpAndSettle();
 
-    // Não deve lançar exceção
     expect(find.byType(ConverseScreen), findsOneWidget);
   });
 
@@ -72,11 +63,9 @@ void main() {
     await tester.tap(secondCard);
     await tester.pumpAndSettle();
 
-    // Limpar
     await tester.tap(find.text('Limpar'));
     await tester.pumpAndSettle();
 
-    // A barra está vazia — o SentenceBar exibe placeholder
     expect(find.text(sampleCards[0].labelPt), findsOneWidget);
   });
 
@@ -86,11 +75,9 @@ void main() {
 
     expect(sampleCards.length, 12);
 
-    // Cards visíveis incialmente (primeiras ~2 linhas)
     final cards = find.byType(CardTile);
     expect(cards, findsAtLeast(3));
 
-    // Scroll para confirmar que existem mais cartões
     await tester.drag(find.byType(GridView), const Offset(0, -500));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('card_obrigado')), findsOneWidget);

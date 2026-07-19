@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart' hide Card;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/sample_cards.dart';
-import '../models/card.dart';
+import '../data/datasources/sample_cards.dart';
+import '../domain/entities/pictogram_card.dart';
+import '../presentation/providers/sentence_provider.dart';
 import '../providers/language_provider.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/card_tile.dart';
@@ -16,7 +17,6 @@ class ConverseScreen extends ConsumerStatefulWidget {
 }
 
 class _ConverseScreenState extends ConsumerState<ConverseScreen> {
-  final List<Card> _sentenceCards = [];
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -25,8 +25,8 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     super.dispose();
   }
 
-  void _addCard(Card card) {
-    setState(() => _sentenceCards.add(card));
+  void _addCard(PictogramCard card) {
+    ref.read(sentenceProvider.notifier).addCard(card);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -40,20 +40,21 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
 
   void _speakSentence() async {
     final languageService = ref.read(languageServiceProvider);
-    final cards = _sentenceCards.toList();
+    final cards = ref.read(sentenceProvider);
     for (final card in cards) {
       await languageService.speak(card);
     }
   }
 
-  void _clearSentence() => setState(() => _sentenceCards.clear());
+  void _clearSentence() => ref.read(sentenceProvider.notifier).clear();
 
-  void _removeLast() => setState(() => _sentenceCards.removeLast());
+  void _removeLast() => ref.read(sentenceProvider.notifier).removeLast();
 
   @override
   Widget build(BuildContext context) {
     final languageService = ref.watch(languageServiceProvider);
-    final hasCards = _sentenceCards.isNotEmpty;
+    final sentenceCards = ref.watch(sentenceProvider);
+    final hasCards = sentenceCards.isNotEmpty;
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
 
@@ -74,7 +75,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
             child: SizedBox(
               height: 100,
               child: SentenceBar(
-                cards: _sentenceCards,
+                cards: sentenceCards,
                 scrollController: _scrollController,
                 compact: isLandscape,
                 labelFor: languageService.labelFor,
@@ -87,13 +88,11 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
               height: 64,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _ActionButton(
                     label: '⌫',
                     fontSize: 22,
                     onTap: hasCards ? _removeLast : null,
-                    flex: 1,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -120,7 +119,6 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                     label: 'Limpar',
                     fontSize: 16,
                     onTap: hasCards ? _clearSentence : null,
-                    flex: 1,
                   ),
                 ],
               ),
@@ -156,13 +154,11 @@ class _ActionButton extends StatelessWidget {
   final String label;
   final double fontSize;
   final VoidCallback? onTap;
-  final int flex;
 
   const _ActionButton({
     required this.label,
     required this.fontSize,
     required this.onTap,
-    this.flex = 1,
   });
 
   @override
@@ -170,7 +166,6 @@ class _ActionButton extends StatelessWidget {
     final isActive = onTap != null;
 
     return Expanded(
-      flex: flex,
       child: GestureDetector(
         onTap: onTap,
         child: Container(

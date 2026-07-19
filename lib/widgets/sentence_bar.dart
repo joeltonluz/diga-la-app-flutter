@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart' hide Card;
-import '../models/card.dart';
+import 'package:flutter/material.dart';
+import '../domain/entities/pictogram_card.dart';
 import '../theme/design_tokens.dart';
 
 class SentenceBar extends StatelessWidget {
-  final List<Card> cards;
+  final List<PictogramCard> cards;
   final ScrollController? scrollController;
   final bool compact;
-  final String? Function(Card)? labelFor;
+  final String? Function(PictogramCard)? labelFor;
 
   const SentenceBar({
     super.key,
@@ -28,7 +28,6 @@ class SentenceBar extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         border: Border.all(
           color: DesignTokens.colors.borderSoft,
-          width: 1,
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -63,7 +62,7 @@ class SentenceBar extends StatelessWidget {
 }
 
 class _MiniCard extends StatelessWidget {
-  final Card card;
+  final PictogramCard card;
   final bool compact;
   final String? label;
 

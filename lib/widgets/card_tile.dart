@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart' hide Card;
-import '../models/card.dart';
+import 'package:flutter/material.dart';
+import '../domain/entities/pictogram_card.dart';
 import '../theme/design_tokens.dart';
 
 class CardTile extends StatelessWidget {
-  final Card card;
+  final PictogramCard card;
   final VoidCallback onTap;
   final String? label;
 

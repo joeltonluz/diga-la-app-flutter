@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart' hide Card;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/voice.dart';
+import '../domain/entities/voice.dart';
 import '../providers/language_provider.dart';
 import '../providers/voice_provider.dart';
 import '../services/language_service.dart';
@@ -387,8 +387,7 @@ class _RateSectionState extends State<_RateSection> {
               thumbColor: DesignTokens.colors.brand,
               overlayColor: DesignTokens.colors.brand.withValues(alpha: 0.12),
               trackHeight: 6,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
+              thumbShape: const RoundSliderThumbShape(),
             ),
             child: Slider(
               value: _sliderValue,

@@ -1,23 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/card.dart';
+
+import '../domain/entities/pictogram_card.dart';
+import '../domain/repositories/settings_repository.dart';
 import 'tts_service.dart';
 
 enum LanguageMode { pt, en }
 
 class LanguageService extends ChangeNotifier {
   final TtsService _tts;
+  final SettingsRepository _settingsRepository;
+  final Completer<void> _ready = Completer<void>();
   LanguageMode _mode = LanguageMode.pt;
 
-  LanguageService(this._tts) {
-    _loadSavedMode();
+  LanguageService(this._tts, this._settingsRepository) {
+    _loadSavedMode().then((_) => _ready.complete());
   }
 
+  Future<void> get ready => _ready.future;
   LanguageMode get currentMode => _mode;
 
   Future<void> _loadSavedMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('languageMode') ?? 'pt';
+    final saved = await _settingsRepository.getLanguageMode();
     _mode = LanguageMode.values.firstWhere(
       (m) => m.name == saved,
       orElse: () => LanguageMode.pt,
@@ -26,14 +31,15 @@ class LanguageService extends ChangeNotifier {
   }
 
   Future<void> setMode(LanguageMode mode) async {
+    await _ready.future;
     if (mode == _mode) return;
     _mode = mode;
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('languageMode', mode.name);
+    await _settingsRepository.setLanguageMode(mode.name);
   }
 
-  Future<void> speak(Card card) async {
+  Future<void> speak(PictogramCard card) async {
+    await _ready.future;
     switch (_mode) {
       case LanguageMode.pt:
         await _tts.setLanguage('pt-BR');
@@ -44,7 +50,7 @@ class LanguageService extends ChangeNotifier {
     }
   }
 
-  String labelFor(Card card) {
+  String labelFor(PictogramCard card) {
     switch (_mode) {
       case LanguageMode.pt:
         return card.labelPt;

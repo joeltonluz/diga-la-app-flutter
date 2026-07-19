@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/sample_categories.dart';
-import '../providers/language_provider.dart';
+import '../data/datasources/sample_categories.dart';
 import '../theme/design_tokens.dart';
 import 'category_grid_screen.dart';
 
@@ -10,8 +9,6 @@ class LearnScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final languageService = ref.watch(languageServiceProvider);
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -43,7 +40,6 @@ class LearnScreen extends ConsumerWidget {
                     MaterialPageRoute(
                       builder: (_) => CategoryGridScreen(
                         category: category,
-                        languageService: languageService,
                       ),
                     ),
                   );

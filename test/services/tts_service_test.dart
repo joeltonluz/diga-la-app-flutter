@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:diga_la_app/models/voice.dart';
+import 'package:diga_la_app/domain/entities/voice.dart';
 import 'package:diga_la_app/services/tts_service.dart';
 import '../helpers/mocks.dart';
 
