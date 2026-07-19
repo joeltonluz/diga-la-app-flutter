@@ -14,7 +14,8 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final languageService = ref.watch(languageServiceProvider);
     final voiceService = ref.watch(voiceServiceProvider);
-    final current = languageService.currentMode;
+    final appMode = languageService.appMode;
+    final speechMode = languageService.speechMode;
     final voices = voiceService.voices;
     final selectedVoice = voiceService.selectedVoice;
 
@@ -24,14 +25,19 @@ class SettingsScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Configurações'),
+        title: Text(languageService.translate('settings')),
         centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         children: [
-          _LanguageSection(
-            current: current,
+          _AppLanguageSection(
+            current: appMode,
+            languageService: languageService,
+          ),
+          const SizedBox(height: 16),
+          _SpeechLanguageSection(
+            current: speechMode,
             languageService: languageService,
           ),
           const SizedBox(height: 16),
@@ -39,20 +45,24 @@ class SettingsScreen extends ConsumerWidget {
             voices: voices,
             selectedVoice: selectedVoice,
             voiceService: voiceService,
+            languageService: languageService,
           ),
           const SizedBox(height: 16),
-          _RateSection(voiceService: voiceService),
+          _RateSection(
+            voiceService: voiceService,
+            languageService: languageService,
+          ),
         ],
       ),
     );
   }
 }
 
-class _LanguageSection extends StatelessWidget {
+class _AppLanguageSection extends StatelessWidget {
   final LanguageMode current;
   final LanguageService languageService;
 
-  const _LanguageSection({
+  const _AppLanguageSection({
     required this.current,
     required this.languageService,
   });
@@ -70,12 +80,12 @@ class _LanguageSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Idioma de fala',
+            languageService.translate('appLanguage'),
             style: DesignTokens.textStyles.labelLarge,
           ),
           const SizedBox(height: 6),
           Text(
-            'Escolha como o app fala em voz alta os cartões que você tocar.',
+            languageService.translate('appLanguageDesc'),
             style: TextStyle(
               fontFamily: DesignTokens.fontFamily,
               fontSize: 16,
@@ -87,18 +97,76 @@ class _LanguageSection extends StatelessWidget {
           const SizedBox(height: 16),
           _LangRow(
             flag: '🇧🇷',
-            title: 'Português',
-            description: 'Fala os cartões em português do Brasil',
+            title: languageService.translate('portuguese'),
+            description: languageService.translate('portugueseAppDesc'),
             isSelected: current == LanguageMode.pt,
-            onTap: () => languageService.setMode(LanguageMode.pt),
+            onTap: () => languageService.setAppMode(LanguageMode.pt),
           ),
           const SizedBox(height: 12),
           _LangRow(
             flag: '🇺🇸',
-            title: 'English',
-            description: 'Speaks cards in American English',
+            title: languageService.translate('english'),
+            description: languageService.translate('englishAppDesc'),
             isSelected: current == LanguageMode.en,
-            onTap: () => languageService.setMode(LanguageMode.en),
+            onTap: () => languageService.setAppMode(LanguageMode.en),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpeechLanguageSection extends StatelessWidget {
+  final LanguageMode current;
+  final LanguageService languageService;
+
+  const _SpeechLanguageSection({
+    required this.current,
+    required this.languageService,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignTokens.colors.surfaceCard,
+        borderRadius: DesignTokens.radii.card,
+        border: Border.all(color: DesignTokens.colors.borderSoft),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            languageService.translate('speechLanguage'),
+            style: DesignTokens.textStyles.labelLarge,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            languageService.translate('speechLanguageDesc'),
+            style: TextStyle(
+              fontFamily: DesignTokens.fontFamily,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: DesignTokens.colors.textSecondary,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _LangRow(
+            flag: '🇧🇷',
+            title: languageService.translate('portuguese'),
+            description: languageService.translate('portugueseSpeechDesc'),
+            isSelected: current == LanguageMode.pt,
+            onTap: () => languageService.setSpeechMode(LanguageMode.pt),
+          ),
+          const SizedBox(height: 12),
+          _LangRow(
+            flag: '🇺🇸',
+            title: languageService.translate('english'),
+            description: languageService.translate('englishSpeechDesc'),
+            isSelected: current == LanguageMode.en,
+            onTap: () => languageService.setSpeechMode(LanguageMode.en),
           ),
         ],
       ),
@@ -184,11 +252,13 @@ class _VoiceSection extends StatelessWidget {
   final List<Voice> voices;
   final Voice? selectedVoice;
   final VoiceService voiceService;
+  final LanguageService languageService;
 
   const _VoiceSection({
     required this.voices,
     required this.selectedVoice,
     required this.voiceService,
+    required this.languageService,
   });
 
   @override
@@ -204,7 +274,7 @@ class _VoiceSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'VOZ',
+            languageService.translate('voice'),
             style: TextStyle(
               fontFamily: DesignTokens.fontFamily,
               fontSize: 13,
@@ -216,7 +286,7 @@ class _VoiceSection extends StatelessWidget {
           const SizedBox(height: 14),
           if (voices.isEmpty)
             Text(
-              'Nenhuma voz disponível para este idioma.',
+              languageService.translate('noVoiceAvailable'),
               style: TextStyle(
                 fontFamily: DesignTokens.fontFamily,
                 fontSize: 15,
@@ -231,6 +301,7 @@ class _VoiceSection extends StatelessWidget {
                 voice: voice,
                 isSelected: selectedVoice?.name == voice.name,
                 isLast: isLast,
+                languageService: languageService,
                 onTap: () => voiceService.selectVoice(voice),
                 onPlay: () => voiceService.previewVoice(voice),
               );
@@ -245,6 +316,7 @@ class _VoiceRow extends StatelessWidget {
   final Voice voice;
   final bool isSelected;
   final bool isLast;
+  final LanguageService languageService;
   final VoidCallback onTap;
   final VoidCallback onPlay;
 
@@ -252,6 +324,7 @@ class _VoiceRow extends StatelessWidget {
     required this.voice,
     required this.isSelected,
     required this.isLast,
+    required this.languageService,
     required this.onTap,
     required this.onPlay,
   });
@@ -298,7 +371,7 @@ class _VoiceRow extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'Ouvir',
+                    languageService.translate('listen'),
                     style: TextStyle(
                       fontFamily: DesignTokens.fontFamily,
                       fontSize: 15,
@@ -318,8 +391,12 @@ class _VoiceRow extends StatelessWidget {
 
 class _RateSection extends StatefulWidget {
   final VoiceService voiceService;
+  final LanguageService languageService;
 
-  const _RateSection({required this.voiceService});
+  const _RateSection({
+    required this.voiceService,
+    required this.languageService,
+  });
 
   @override
   State<_RateSection> createState() => _RateSectionState();
@@ -335,10 +412,10 @@ class _RateSectionState extends State<_RateSection> {
   }
 
   String _labelForRate(double rate) {
-    if (rate <= 0.3) return 'Muito Lento';
-    if (rate <= 0.4) return 'Lento';
-    if (rate <= 0.5) return 'Médio';
-    return 'Rápido';
+    if (rate <= 0.3) return widget.languageService.translate('verySlow');
+    if (rate <= 0.4) return widget.languageService.translate('slow');
+    if (rate <= 0.5) return widget.languageService.translate('medium');
+    return widget.languageService.translate('fast');
   }
 
   @override
@@ -359,7 +436,7 @@ class _RateSectionState extends State<_RateSection> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'VELOCIDADE DA FALA',
+                widget.languageService.translate('speechRate'),
                 style: TextStyle(
                   fontFamily: DesignTokens.fontFamily,
                   fontSize: 13,
@@ -420,7 +497,7 @@ class _RateSectionState extends State<_RateSection> {
                 ),
                 child: Center(
                   child: Text(
-                    'Ouvir exemplo',
+                    widget.languageService.translate('listenExample'),
                     style: TextStyle(
                       fontFamily: DesignTokens.fontFamily,
                       fontSize: 17,

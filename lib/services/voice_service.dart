@@ -52,17 +52,14 @@ class VoiceService extends ChangeNotifier {
     _allTtsVoices = await _tts.getVoices();
     _filteredVoices = _filterVoices(
       _allTtsVoices,
-      _languageService.currentMode,
+      _languageService.speechMode,
     );
     await _restoreOrFallback();
   }
 
   Future<void> previewRate(double rate) async {
     await _tts.setSpeechRate(rate);
-    final isPt = _languageService.currentMode == LanguageMode.pt;
-    final phrase = isPt
-        ? 'Oi, prazer, estou aqui para te ajudar.'
-        : "Hi, nice to meet you, I'm here to help you.";
+    final phrase = _languageService.translate('previewPhrase');
     await _tts.speak(phrase);
   }
 
@@ -113,10 +110,7 @@ class VoiceService extends ChangeNotifier {
   }
 
   Future<void> previewVoice(Voice voice) async {
-    final isPt = _languageService.currentMode == LanguageMode.pt;
-    final phrase = isPt
-        ? 'Oi, prazer, estou aqui para te ajudar.'
-        : "Hi, nice to meet you, I'm here to help you.";
+    final phrase = _languageService.translate('previewPhrase');
     await _tts.setVoice(voice);
     await _tts.speak(phrase);
   }

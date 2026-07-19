@@ -13,30 +13,68 @@ void main() {
   );
 
   group('default mode', () {
-    test('default mode is pt when no preference saved', () {
+    test('default app and speech modes are pt when no preference saved', () {
       final tts = MockTtsService();
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
-      expect(service.currentMode, LanguageMode.pt);
+      expect(service.appMode, LanguageMode.pt);
+      expect(service.speechMode, LanguageMode.pt);
     });
   });
 
-  group('setMode', () {
-    test('setMode changes current mode', () async {
+  group('setAppMode', () {
+    test('setAppMode changes app mode', () async {
       final tts = MockTtsService();
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
-      await service.setMode(LanguageMode.en);
-      expect(service.currentMode, LanguageMode.en);
+      await service.setAppMode(LanguageMode.en);
+      expect(service.appMode, LanguageMode.en);
     });
 
-    test('setMode persists to SettingsRepository', () async {
+    test('setAppMode persists to SettingsRepository', () async {
       final tts = MockTtsService();
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
-      await service.setMode(LanguageMode.en);
-      final saved = await settings.getLanguageMode();
+      await service.setAppMode(LanguageMode.en);
+      final saved = await settings.getAppLanguageMode();
       expect(saved, 'en');
+    });
+
+    test('setAppMode does not change speechMode', () async {
+      final tts = MockTtsService();
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      await service.setAppMode(LanguageMode.en);
+      expect(service.appMode, LanguageMode.en);
+      expect(service.speechMode, LanguageMode.pt);
+    });
+  });
+
+  group('setSpeechMode', () {
+    test('setSpeechMode changes speech mode', () async {
+      final tts = MockTtsService();
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      await service.setSpeechMode(LanguageMode.en);
+      expect(service.speechMode, LanguageMode.en);
+    });
+
+    test('setSpeechMode persists to SettingsRepository', () async {
+      final tts = MockTtsService();
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      await service.setSpeechMode(LanguageMode.en);
+      final saved = await settings.getSpeechLanguageMode();
+      expect(saved, 'en');
+    });
+
+    test('setSpeechMode does not change appMode', () async {
+      final tts = MockTtsService();
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      await service.setSpeechMode(LanguageMode.en);
+      expect(service.speechMode, LanguageMode.en);
+      expect(service.appMode, LanguageMode.pt);
     });
   });
 
@@ -49,7 +87,17 @@ void main() {
       when(() => tts.speak(any())).thenAnswer((_) async {});
     });
 
-    test('PT mode calls setLanguage pt-BR and speak labelPt', () async {
+    test('uses speechMode (not appMode) to determine language', () async {
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      await service.setAppMode(LanguageMode.en);
+      expect(service.appMode, LanguageMode.en);
+      await service.speak(card);
+      verify(() => tts.setLanguage('pt-BR')).called(1);
+      verify(() => tts.speak('água')).called(1);
+    });
+
+    test('PT speech mode calls setLanguage pt-BR and speak labelPt', () async {
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
       await service.speak(card);
@@ -57,30 +105,61 @@ void main() {
       verify(() => tts.speak('água')).called(1);
     });
 
-    test('EN mode calls setLanguage en-US and speak labelEn', () async {
+    test('EN speech mode calls setLanguage en-US and speak labelEn', () async {
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
-      await service.setMode(LanguageMode.en);
+      await service.setSpeechMode(LanguageMode.en);
       await service.speak(card);
       verify(() => tts.setLanguage('en-US')).called(1);
       verify(() => tts.speak('water')).called(1);
     });
+
+    test('uses speakPt when available', () async {
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      const cardWithSpeak = PictogramCard(
+        id: 'test',
+        labelPt: 'casa',
+        labelEn: 'house',
+        emoji: '🏠',
+        speakPt: 'minha casa',
+      );
+      await service.speak(cardWithSpeak);
+      verify(() => tts.speak('minha casa')).called(1);
+    });
   });
 
   group('labelFor', () {
-    test('PT mode returns labelPt', () {
+    test('PT app mode returns labelPt', () {
       final tts = MockTtsService();
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
       expect(service.labelFor(card), 'água');
     });
 
-    test('EN mode returns labelEn', () async {
+    test('EN app mode returns labelEn', () async {
       final tts = MockTtsService();
       final settings = InMemorySettingsRepository();
       final service = LanguageService(tts, settings);
-      await service.setMode(LanguageMode.en);
+      await service.setAppMode(LanguageMode.en);
       expect(service.labelFor(card), 'water');
+    });
+  });
+
+  group('translate', () {
+    test('PT app mode returns Portuguese string', () {
+      final tts = MockTtsService();
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      expect(service.translate('converse'), 'Conversar');
+    });
+
+    test('EN app mode returns English string', () async {
+      final tts = MockTtsService();
+      final settings = InMemorySettingsRepository();
+      final service = LanguageService(tts, settings);
+      await service.setAppMode(LanguageMode.en);
+      expect(service.translate('converse'), 'Converse');
     });
   });
 }

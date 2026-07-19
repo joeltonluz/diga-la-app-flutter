@@ -63,8 +63,8 @@ void main() {
     });
   });
 
-  group('Cartões de idioma', () {
-    testWidgets('Português e English estão visíveis', (tester) async {
+  group('Seções de idioma', () {
+    testWidgets('seções app e fala estão visíveis', (tester) async {
       final tts = createMockTts();
       final settings = InMemorySettingsRepository();
       final languageService = LanguageService(tts, settings);
@@ -78,30 +78,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Português'), findsOneWidget);
-      expect(find.text('English'), findsOneWidget);
-    });
-
-    testWidgets('selecionar Português reflete no estado', (tester) async {
-      final tts = createMockTts();
-      final settings = InMemorySettingsRepository();
-      final languageService = LanguageService(tts, settings);
-      final voiceService = VoiceService(tts, languageService, settings);
-
-      await tester.pumpWidget(
-        buildTestApp(
-          languageService: languageService,
-          voiceService: voiceService,
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Português'), findsOneWidget);
-
-      await tester.tap(find.text('English'));
-      await tester.pumpAndSettle();
-
-      expect(languageService.currentMode, LanguageMode.en);
+      expect(find.text('Idioma do app'), findsOneWidget);
+      expect(find.text('Idioma de fala'), findsOneWidget);
     });
   });
 
@@ -118,6 +96,7 @@ void main() {
       final settings = InMemorySettingsRepository();
       final languageService = LanguageService(tts, settings);
       final voiceService = VoiceService(tts, languageService, settings);
+
       await voiceService.ready;
 
       await tester.pumpWidget(

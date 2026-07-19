@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../providers/language_provider.dart';
 import '../theme/design_tokens.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final languageService = ref.watch(languageServiceProvider);
+    final t = languageService.translate;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Diga Lá',
+          t('appTitle'),
           style: TextStyle(
             fontFamily: DesignTokens.fontFamily,
             fontSize: 16,
@@ -30,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () => Navigator.pushNamed(context, '/settings'),
-                tooltip: 'Configurações',
+                tooltip: t('settings'),
                 iconSize: 26,
               ),
             ),
@@ -57,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                     Image.asset('assets/logo.png', width: 120, height: 120),
                     const SizedBox(height: 16),
                     Text(
-                      'Diga Lá',
+                      t('appTitle'),
                       style: DesignTokens.textStyles.displayLarge.copyWith(
                         color: DesignTokens.colors.textPrimary,
                       ),
@@ -75,14 +80,14 @@ class HomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(24),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('💬', style: TextStyle(fontSize: 28)),
-                            SizedBox(width: 14),
+                            const Text('💬', style: TextStyle(fontSize: 28)),
+                            const SizedBox(width: 14),
                             Text(
-                              'Conversar',
-                              style: TextStyle(
+                              t('converse'),
+                              style: const TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -114,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                             const Text('📖', style: TextStyle(fontSize: 28)),
                             const SizedBox(width: 14),
                             Text(
-                              'Aprender',
+                              t('learn'),
                               style: TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.w700,

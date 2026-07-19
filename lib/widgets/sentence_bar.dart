@@ -7,6 +7,7 @@ class SentenceBar extends StatelessWidget {
   final ScrollController? scrollController;
   final bool compact;
   final String? Function(PictogramCard)? labelFor;
+  final String emptyMessage;
 
   const SentenceBar({
     super.key,
@@ -14,6 +15,7 @@ class SentenceBar extends StatelessWidget {
     this.scrollController,
     this.compact = false,
     this.labelFor,
+    this.emptyMessage = 'Toque nos cartões para montar uma frase',
   });
 
   @override
@@ -48,7 +50,7 @@ class SentenceBar extends StatelessWidget {
             )
           : Center(
               child: Text(
-                'Toque nos cartões para montar uma frase',
+                emptyMessage,
                 style: TextStyle(
                   fontFamily: DesignTokens.fontFamily,
                   fontSize: 17,

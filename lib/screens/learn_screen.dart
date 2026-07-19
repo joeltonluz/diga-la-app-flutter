@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/datasources/sample_categories.dart';
+import '../providers/language_provider.dart';
+import '../services/language_service.dart';
 import '../theme/design_tokens.dart';
 import 'category_grid_screen.dart';
 
@@ -9,13 +11,16 @@ class LearnScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final languageService = ref.watch(languageServiceProvider);
+    final appMode = languageService.appMode;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Aprender'),
+        title: Text(languageService.translate('learn')),
         centerTitle: true,
       ),
       body: Padding(
@@ -26,6 +31,7 @@ class LearnScreen extends ConsumerWidget {
           crossAxisSpacing: 20,
           childAspectRatio: 1.2,
           children: sampleCategories.map((category) {
+            final categoryName = appMode == LanguageMode.en ? category.nameEn : category.name;
             return Ink(
               decoration: BoxDecoration(
                 color: DesignTokens.colors.surfaceCard,
@@ -55,7 +61,7 @@ class LearnScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        category.name,
+                        categoryName,
                         style: TextStyle(
                           fontFamily: DesignTokens.fontFamily,
                           fontSize: 19,

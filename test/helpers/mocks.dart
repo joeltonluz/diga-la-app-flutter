@@ -8,16 +8,25 @@ class MockTtsService extends Mock implements TtsService {}
 class MockFlutterTts extends Mock implements FlutterTts {}
 
 class InMemorySettingsRepository implements SettingsRepository {
-  String? _languageMode;
+  String? _speechLanguageMode;
+  String? _appLanguageMode;
   double? _speechRate;
   String? _voiceName;
 
   @override
-  Future<String?> getLanguageMode() async => _languageMode;
+  Future<String?> getSpeechLanguageMode() async => _speechLanguageMode;
 
   @override
-  Future<void> setLanguageMode(String mode) async {
-    _languageMode = mode;
+  Future<void> setSpeechLanguageMode(String mode) async {
+    _speechLanguageMode = mode;
+  }
+
+  @override
+  Future<String?> getAppLanguageMode() async => _appLanguageMode;
+
+  @override
+  Future<void> setAppLanguageMode(String mode) async {
+    _appLanguageMode = mode;
   }
 
   @override

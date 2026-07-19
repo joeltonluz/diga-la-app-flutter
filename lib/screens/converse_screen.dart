@@ -63,9 +63,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
-          tooltip: 'Voltar',
+          tooltip: languageService.translate('back'),
         ),
-        title: const Text('Conversar'),
+        title: Text(languageService.translate('converse')),
         centerTitle: true,
       ),
       body: Column(
@@ -79,6 +79,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                 scrollController: _scrollController,
                 compact: isLandscape,
                 labelFor: languageService.labelFor,
+                emptyMessage: languageService.translate('emptySentence'),
               ),
             ),
           ),
@@ -105,9 +106,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                           borderRadius: BorderRadius.circular(18),
                         ),
                       ),
-                      child: const Text(
-                        'Falar',
-                        style: TextStyle(
+                      child: Text(
+                        languageService.translate('speak'),
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                         ),
@@ -116,7 +117,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                   ),
                   const SizedBox(width: 12),
                   _ActionButton(
-                    label: 'Limpar',
+                    label: languageService.translate('clear'),
                     fontSize: 16,
                     onTap: hasCards ? _clearSentence : null,
                   ),

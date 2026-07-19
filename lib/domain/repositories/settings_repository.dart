@@ -1,6 +1,9 @@
 abstract class SettingsRepository {
-  Future<String?> getLanguageMode();
-  Future<void> setLanguageMode(String mode);
+  Future<String?> getSpeechLanguageMode();
+  Future<void> setSpeechLanguageMode(String mode);
+
+  Future<String?> getAppLanguageMode();
+  Future<void> setAppLanguageMode(String mode);
 
   Future<double?> getSpeechRate();
   Future<void> setSpeechRate(double rate);

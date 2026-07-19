@@ -3,20 +3,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/repositories/settings_repository.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
-  static const _languageModeKey = 'languageMode';
+  static const _speechLanguageModeKey = 'speechLanguageMode';
+  static const _appLanguageModeKey = 'appLanguageMode';
   static const _speechRateKey = 'speechRate';
   static const _voiceNameKey = 'voiceName';
 
   @override
-  Future<String?> getLanguageMode() async {
+  Future<String?> getSpeechLanguageMode() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_languageModeKey);
+    return prefs.getString(_speechLanguageModeKey);
   }
 
   @override
-  Future<void> setLanguageMode(String mode) async {
+  Future<void> setSpeechLanguageMode(String mode) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_languageModeKey, mode);
+    await prefs.setString(_speechLanguageModeKey, mode);
+  }
+
+  @override
+  Future<String?> getAppLanguageMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_appLanguageModeKey);
+  }
+
+  @override
+  Future<void> setAppLanguageMode(String mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_appLanguageModeKey, mode);
   }
 
   @override
