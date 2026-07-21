@@ -12,7 +12,6 @@ class SentenceBar extends StatelessWidget {
   final void Function(int index)? onCardTap;
   final void Function(int oldIndex)? onMoveLeft;
   final void Function(int index)? onMoveRight;
-
   const SentenceBar({
     super.key,
     required this.cards,

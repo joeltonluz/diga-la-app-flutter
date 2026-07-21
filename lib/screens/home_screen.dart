@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../providers/language_provider.dart';
 import '../theme/design_tokens.dart';
+import '../widgets/balo_widget.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -59,8 +60,8 @@ class HomeScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(),
-                    Image.asset('assets/logo.png', width: 120, height: 120),
-                    const SizedBox(height: 16),
+                    const BaloWidget(animation: BaloAnimation.wave),
+                    const SizedBox(height: 20),
                     Text(
                       t('appTitle'),
                       style: DesignTokens.textStyles.displayLarge.copyWith(
@@ -147,8 +148,7 @@ class HomeScreen extends ConsumerWidget {
                             width: 2,
                           ),
                         ),
-                        icon: const Text('⭐',
-                            style: TextStyle(fontSize: 22)),
+                        icon: const Text('⭐', style: TextStyle(fontSize: 22)),
                         label: Text(
                           t('savedPhrases'),
                           style: TextStyle(

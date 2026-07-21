@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/design_tokens.dart';
+import '../widgets/balo_widget.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logo.png', width: 140, height: 140),
+                const BaloWidget(size: 140, animation: BaloAnimation.breathing),
                 const SizedBox(height: 16),
                 Text(
                   'Diga Lá',

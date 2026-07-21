@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/datasources/sample_cards.dart';
 import '../domain/entities/pictogram_card.dart';
-import '../presentation/providers/sentence_provider.dart';
 import '../presentation/providers/saved_phrases_provider.dart';
+import '../presentation/providers/sentence_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/pictogram_repository_provider.dart';
 import '../theme/design_tokens.dart';
+import '../widgets/balo_widget.dart';
 import '../widgets/card_tile.dart';
 import '../widgets/category_chip_bar.dart';
 import '../widgets/sentence_bar.dart';
@@ -21,6 +22,7 @@ class ConverseScreen extends ConsumerStatefulWidget {
 
 class _ConverseScreenState extends ConsumerState<ConverseScreen> {
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey<BaloWidgetState> _baloKey = GlobalKey<BaloWidgetState>();
   String? _selectedCategoryId;
 
   @override
@@ -47,6 +49,8 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     final cards = ref.read(sentenceProvider);
 
     if (cards.isEmpty) return;
+
+    _baloKey.currentState?.startPulse();
 
     for (int i = 0; i < cards.length; i++) {
       final isActive = ref.read(speakingIndexProvider) != null;
@@ -88,15 +92,15 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
         content: TextField(
           controller: nameController,
           decoration: InputDecoration(
-            hintText:
-                ref.read(languageServiceProvider).translate('phraseNameHint'),
+            hintText: ref
+                .read(languageServiceProvider)
+                .translate('phraseNameHint'),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:
-                Text(ref.read(languageServiceProvider).translate('cancel')),
+            child: Text(ref.read(languageServiceProvider).translate('cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(
@@ -110,14 +114,15 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     );
 
     if (name == null) return;
-    await ref.read(savedPhrasesProvider.notifier).save(
-          name.isEmpty ? null : name,
-          cards,
-        );
+    await ref
+        .read(savedPhrasesProvider.notifier)
+        .save(name.isEmpty ? null : name, cards);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ref.read(languageServiceProvider).translate('phraseSaved')),
+          content: Text(
+            ref.read(languageServiceProvider).translate('phraseSaved'),
+          ),
         ),
       );
     }
@@ -127,7 +132,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     if (_selectedCategoryId == null) return sampleCards;
 
     final categories = ref.read(pictogramRepositoryProvider).getAllCategories();
-    final category = categories.where((c) => c.id == _selectedCategoryId).firstOrNull;
+    final category = categories
+        .where((c) => c.id == _selectedCategoryId)
+        .firstOrNull;
     return category?.items ?? [];
   }
 
@@ -136,7 +143,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     final languageService = ref.watch(languageServiceProvider);
     final sentenceCards = ref.watch(sentenceProvider);
     final speakingIndex = ref.watch(speakingIndexProvider);
-    final categories = ref.watch(pictogramRepositoryProvider).getAllCategories();
+    final categories = ref
+        .watch(pictogramRepositoryProvider)
+        .getAllCategories();
     final isSpeaking = speakingIndex != null;
     final hasCards = sentenceCards.isNotEmpty;
     final size = MediaQuery.of(context).size;
@@ -158,18 +167,29 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
             child: SizedBox(
-              height: 100,
-              child: SentenceBar(
-                cards: sentenceCards,
-                scrollController: _scrollController,
-                compact: isLandscape,
-                labelFor: languageService.labelFor,
-                emptyMessage: languageService.translate('emptySentence'),
-                speakingIndex: speakingIndex,
-                onCardTap: isSpeaking ? null : _removeCardAt,
-                onMoveLeft: isSpeaking ? null : _moveCardLeft,
-                onMoveRight: isSpeaking ? null : _moveCardRight,
-              ),
+              height: hasCards ? 100 : 120,
+              child: hasCards
+                  ? SentenceBar(
+                      cards: sentenceCards,
+                      scrollController: _scrollController,
+                      compact: isLandscape,
+                      labelFor: languageService.labelFor,
+                      emptyMessage: languageService.translate('emptySentence'),
+                      speakingIndex: speakingIndex,
+                      onCardTap: isSpeaking ? null : _removeCardAt,
+                      onMoveLeft: isSpeaking ? null : _moveCardLeft,
+                      onMoveRight: isSpeaking ? null : _moveCardRight,
+                    )
+                  : Center(
+                      child: BaloWidget(
+                        key: _baloKey,
+                        size: 84,
+                        animation: BaloAnimation.pulse,
+                        emptyMessage: languageService.translate(
+                          'emptySentence',
+                        ),
+                      ),
+                    ),
             ),
           ),
           Padding(
@@ -239,6 +259,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 6),
           CategoryChipBar(
             categories: categories,
             generalCards: sampleCards,
