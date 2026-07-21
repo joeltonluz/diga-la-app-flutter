@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../domain/entities/pictogram_card.dart';
 import '../theme/design_tokens.dart';
 
@@ -17,7 +18,7 @@ class CardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: DesignTokens.colors.surfaceCard,
+      color: DesignTokens.colors.hcBackground,
       borderRadius: DesignTokens.radii.card,
       child: InkWell(
         onTap: onTap,
@@ -34,10 +35,7 @@ class CardTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                card.emoji,
-                style: const TextStyle(fontSize: 40),
-              ),
+              Text(card.emoji, style: const TextStyle(fontSize: 40)),
               const SizedBox(height: 8),
               Text(
                 label ?? card.label,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../domain/entities/category.dart';
 import '../domain/entities/pictogram_card.dart';
 import '../services/language_service.dart';
@@ -84,7 +85,7 @@ class _Chip extends StatelessWidget {
           color: selected
               ? DesignTokens.colors.brand
               : DesignTokens.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
                 ? DesignTokens.colors.brand

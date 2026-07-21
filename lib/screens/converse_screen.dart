@@ -105,7 +105,9 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           TextButton(
             onPressed: () => Navigator.pop(
               context,
-              nameController.text.isEmpty ? null : nameController.text,
+              nameController.text.isEmpty
+                  ? 'Frase Customizada'
+                  : nameController.text,
             ),
             child: Text(ref.read(languageServiceProvider).translate('save')),
           ),
@@ -204,7 +206,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                     fontSize: 22,
                     onTap: hasCards && !isSpeaking ? _removeLast : null,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 4),
                   Expanded(
                     flex: 2,
                     child: isSpeaking
@@ -243,23 +245,23 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                             ),
                           ),
                   ),
-                  const SizedBox(width: 12),
-                  _ActionButton(
-                    label: '💾',
-                    fontSize: 18,
-                    onTap: hasCards && !isSpeaking ? _savePhrase : null,
-                  ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   _ActionButton(
                     label: languageService.translate('clear'),
-                    fontSize: 16,
+                    fontSize: 14,
                     onTap: hasCards && !isSpeaking ? _clearSentence : null,
+                  ),
+                  const SizedBox(width: 4),
+                  _ActionButton(
+                    label: '⭐️', //'💾',
+                    fontSize: 18,
+                    onTap: hasCards && !isSpeaking ? _savePhrase : null,
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           CategoryChipBar(
             categories: categories,
             generalCards: sampleCards,
