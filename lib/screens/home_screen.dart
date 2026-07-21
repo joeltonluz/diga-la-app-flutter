@@ -130,6 +130,35 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/saved-phrases');
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          side: BorderSide(
+                            color: DesignTokens.colors.borderSoft,
+                            width: 2,
+                          ),
+                        ),
+                        icon: const Text('⭐',
+                            style: TextStyle(fontSize: 22)),
+                        label: Text(
+                          t('savedPhrases'),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: DesignTokens.colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
                     const Spacer(flex: 2),
                     FutureBuilder<PackageInfo>(
                       future: PackageInfo.fromPlatform(),

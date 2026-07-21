@@ -14,6 +14,25 @@ class SentenceNotifier extends StateNotifier<List<PictogramCard>> {
     }
   }
 
+  void removeAt(int index) {
+    if (index >= 0 && index < state.length) {
+      state = [...state]..removeAt(index);
+    }
+  }
+
+  void reorder(int oldIndex, int newIndex) {
+    if (oldIndex < 0 ||
+        oldIndex >= state.length ||
+        newIndex < 0 ||
+        newIndex >= state.length) {
+      return;
+    }
+    final cards = [...state];
+    final card = cards.removeAt(oldIndex);
+    cards.insert(newIndex, card);
+    state = cards;
+  }
+
   void clear() {
     state = [];
   }
@@ -23,3 +42,5 @@ final sentenceProvider =
     StateNotifierProvider<SentenceNotifier, List<PictogramCard>>((ref) {
   return SentenceNotifier();
 });
+
+final speakingIndexProvider = StateProvider<int?>((ref) => null);

@@ -32,6 +32,14 @@ class _DesignColors {
   Color get brandDark => const Color(0xFF004E71);
   Color get roseSoft => const Color(0xBFF3BEC1);
   Color get shadow => const Color(0x2E282E38);
+
+  Color get hcBackground => const Color(0xFFFFFFFF);
+  Color get hcSurface => const Color(0xFFFFFFFF);
+  Color get hcText => const Color(0xFF000000);
+  Color get hcTextSecondary => const Color(0xFF333333);
+  Color get hcBrand => const Color(0xFF0000FF);
+  Color get hcBorder => const Color(0xFF000000);
+  Color get hcButtonText => const Color(0xFFFFFFFF);
 }
 
 class _DesignTextStyles {

@@ -6,7 +6,10 @@ import '../datasources/sample_categories.dart';
 
 class PictogramRepositoryImpl implements PictogramRepository {
   @override
-  List<PictogramCard> getAllCards() => sampleCards;
+  List<PictogramCard> getAllCards() => [
+        ...sampleCards,
+        for (final cat in sampleCategories) ...cat.items,
+      ];
 
   @override
   List<Category> getAllCategories() => sampleCategories;

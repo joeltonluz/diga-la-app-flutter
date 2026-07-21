@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/entities/voice.dart';
+import '../providers/high_contrast_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/voice_provider.dart';
 import '../services/language_service.dart';
@@ -52,6 +53,8 @@ class SettingsScreen extends ConsumerWidget {
             voiceService: voiceService,
             languageService: languageService,
           ),
+          const SizedBox(height: 16),
+          _HighContrastSection(languageService: languageService),
         ],
       ),
     );
@@ -508,6 +511,57 @@ class _RateSectionState extends State<_RateSection> {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HighContrastSection extends ConsumerWidget {
+  final LanguageService languageService;
+
+  const _HighContrastSection({required this.languageService});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isEnabled = ref.watch(highContrastModeProvider);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignTokens.colors.surfaceCard,
+        borderRadius: DesignTokens.radii.card,
+        border: Border.all(color: DesignTokens.colors.borderSoft),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  languageService.translate('highContrast'),
+                  style: DesignTokens.textStyles.labelLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  languageService.translate('highContrastDesc'),
+                  style: TextStyle(
+                    fontFamily: DesignTokens.fontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: DesignTokens.colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: isEnabled,
+            onChanged: (_) {
+              ref.read(highContrastModeProvider.notifier).toggle();
+            },
           ),
         ],
       ),

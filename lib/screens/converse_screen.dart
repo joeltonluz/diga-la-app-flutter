@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/datasources/sample_cards.dart';
 import '../domain/entities/pictogram_card.dart';
 import '../presentation/providers/sentence_provider.dart';
+import '../presentation/providers/saved_phrases_provider.dart';
 import '../providers/language_provider.dart';
+import '../providers/pictogram_repository_provider.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/card_tile.dart';
+import '../widgets/category_chip_bar.dart';
 import '../widgets/sentence_bar.dart';
 
 class ConverseScreen extends ConsumerStatefulWidget {
@@ -18,6 +21,7 @@ class ConverseScreen extends ConsumerStatefulWidget {
 
 class _ConverseScreenState extends ConsumerState<ConverseScreen> {
   final ScrollController _scrollController = ScrollController();
+  String? _selectedCategoryId;
 
   @override
   void dispose() {
@@ -38,25 +42,106 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     });
   }
 
-  void _speakSentence() async {
+  Future<void> _speakSentence() async {
     final languageService = ref.read(languageServiceProvider);
     final cards = ref.read(sentenceProvider);
-    for (final card in cards) {
-      await languageService.speak(card);
+
+    if (cards.isEmpty) return;
+
+    for (int i = 0; i < cards.length; i++) {
+      final isActive = ref.read(speakingIndexProvider) != null;
+      if (!isActive && i > 0) break;
+      ref.read(speakingIndexProvider.notifier).state = i;
+      await languageService.speak(cards[i]);
     }
+
+    ref.read(speakingIndexProvider.notifier).state = null;
+  }
+
+  void _stopSpeech() {
+    ref.read(speakingIndexProvider.notifier).state = null;
+    ref.read(ttsServiceProvider).stop();
   }
 
   void _clearSentence() => ref.read(sentenceProvider.notifier).clear();
 
   void _removeLast() => ref.read(sentenceProvider.notifier).removeLast();
 
+  void _removeCardAt(int index) =>
+      ref.read(sentenceProvider.notifier).removeAt(index);
+
+  void _moveCardLeft(int index) =>
+      ref.read(sentenceProvider.notifier).reorder(index, index - 1);
+
+  void _moveCardRight(int index) =>
+      ref.read(sentenceProvider.notifier).reorder(index, index + 1);
+
+  Future<void> _savePhrase() async {
+    final cards = ref.read(sentenceProvider);
+    if (cards.isEmpty) return;
+
+    final nameController = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(ref.read(languageServiceProvider).translate('savePhrase')),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            hintText:
+                ref.read(languageServiceProvider).translate('phraseNameHint'),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child:
+                Text(ref.read(languageServiceProvider).translate('cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(
+              context,
+              nameController.text.isEmpty ? null : nameController.text,
+            ),
+            child: Text(ref.read(languageServiceProvider).translate('save')),
+          ),
+        ],
+      ),
+    );
+
+    if (name == null) return;
+    await ref.read(savedPhrasesProvider.notifier).save(
+          name.isEmpty ? null : name,
+          cards,
+        );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ref.read(languageServiceProvider).translate('phraseSaved')),
+        ),
+      );
+    }
+  }
+
+  List<PictogramCard> _getCurrentCards() {
+    if (_selectedCategoryId == null) return sampleCards;
+
+    final categories = ref.read(pictogramRepositoryProvider).getAllCategories();
+    final category = categories.where((c) => c.id == _selectedCategoryId).firstOrNull;
+    return category?.items ?? [];
+  }
+
   @override
   Widget build(BuildContext context) {
     final languageService = ref.watch(languageServiceProvider);
     final sentenceCards = ref.watch(sentenceProvider);
+    final speakingIndex = ref.watch(speakingIndexProvider);
+    final categories = ref.watch(pictogramRepositoryProvider).getAllCategories();
+    final isSpeaking = speakingIndex != null;
     final hasCards = sentenceCards.isNotEmpty;
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
+    final currentCards = _getCurrentCards();
 
     return Scaffold(
       appBar: AppBar(
@@ -80,6 +165,10 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                 compact: isLandscape,
                 labelFor: languageService.labelFor,
                 emptyMessage: languageService.translate('emptySentence'),
+                speakingIndex: speakingIndex,
+                onCardTap: isSpeaking ? null : _removeCardAt,
+                onMoveLeft: isSpeaking ? null : _moveCardLeft,
+                onMoveRight: isSpeaking ? null : _moveCardRight,
               ),
             ),
           ),
@@ -93,37 +182,71 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                   _ActionButton(
                     label: '⌫',
                     fontSize: 22,
-                    onTap: hasCards ? _removeLast : null,
+                    onTap: hasCards && !isSpeaking ? _removeLast : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
-                      onPressed: hasCards ? _speakSentence : null,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 64),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                      ),
-                      child: Text(
-                        languageService.translate('speak'),
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
+                    child: isSpeaking
+                        ? ElevatedButton(
+                            onPressed: _stopSpeech,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 64),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              backgroundColor: const Color(0xFFE57373),
+                              foregroundColor: DesignTokens.colors.surfaceCard,
+                            ),
+                            child: Text(
+                              languageService.translate('stop'),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: hasCards ? _speakSentence : null,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 64),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            child: Text(
+                              languageService.translate('speak'),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 12),
                   _ActionButton(
+                    label: '💾',
+                    fontSize: 18,
+                    onTap: hasCards && !isSpeaking ? _savePhrase : null,
+                  ),
+                  const SizedBox(width: 8),
+                  _ActionButton(
                     label: languageService.translate('clear'),
                     fontSize: 16,
-                    onTap: hasCards ? _clearSentence : null,
+                    onTap: hasCards && !isSpeaking ? _clearSentence : null,
                   ),
                 ],
               ),
             ),
+          ),
+          CategoryChipBar(
+            categories: categories,
+            generalCards: sampleCards,
+            selectedCategoryId: _selectedCategoryId,
+            languageService: languageService,
+            onCategorySelected: (id) {
+              setState(() => _selectedCategoryId = id);
+            },
           ),
           const SizedBox(height: 6),
           Expanded(
@@ -134,7 +257,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                 mainAxisSpacing: isLandscape ? 10 : 16,
                 crossAxisSpacing: isLandscape ? 10 : 16,
                 childAspectRatio: isLandscape ? 1.4 : 1.0,
-                children: sampleCards.map((card) {
+                children: currentCards.map((card) {
                   return CardTile(
                     key: ValueKey('card_${card.id}'),
                     card: card,
