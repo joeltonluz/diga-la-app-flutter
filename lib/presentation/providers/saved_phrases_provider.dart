@@ -25,13 +25,31 @@ class SavedPhrasesNotifier extends StateNotifier<List<SavedPhrase>> {
   }
 
   Future<void> save(String? name, List<PictogramCard> cards) async {
-    final phrase = SavedPhrase(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      cardIds: cards.map((c) => c.id).toList(),
-      createdAt: DateTime.now(),
-    );
-    state = [...state, phrase];
+    final cardIds = cards.map((c) => c.id).toList();
+
+    final existingIndex = state.indexWhere((p) =>
+        p.cardIds.length == cardIds.length &&
+        p.cardIds.asMap().entries.every((e) => e.value == cardIds[e.key]));
+
+    if (existingIndex >= 0) {
+      state = [
+        for (int i = 0; i < state.length; i++)
+          if (i == existingIndex)
+            state[i].copyWith(name: name, createdAt: DateTime.now())
+          else
+            state[i],
+      ];
+    } else {
+      state = [
+        ...state,
+        SavedPhrase(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: name,
+          cardIds: cardIds,
+          createdAt: DateTime.now(),
+        ),
+      ];
+    }
     await _persist();
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/datasources/sample_cards.dart';
 import '../domain/entities/pictogram_card.dart';
+import '../domain/entities/saved_phrase.dart';
 import '../presentation/providers/saved_phrases_provider.dart';
 import '../presentation/providers/sentence_provider.dart';
 import '../providers/language_provider.dart';
@@ -82,49 +83,44 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
 
   Future<void> _savePhrase() async {
     final cards = ref.read(sentenceProvider);
+    final languageService = ref.read(languageServiceProvider);
     if (cards.isEmpty) return;
 
-    final nameController = TextEditingController();
+    final autoName = cards.map((c) => languageService.labelFor(c)).join(' ');
+    final nameController = TextEditingController(text: autoName);
+
     final name = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(ref.read(languageServiceProvider).translate('savePhrase')),
+        title: Text(languageService.translate('savePhrase')),
         content: TextField(
           controller: nameController,
           decoration: InputDecoration(
-            hintText: ref
-                .read(languageServiceProvider)
-                .translate('phraseNameHint'),
+            hintText: languageService.translate('phraseNameHint'),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(ref.read(languageServiceProvider).translate('cancel')),
+            child: Text(languageService.translate('cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(
               context,
-              nameController.text.isEmpty
-                  ? 'Frase Customizada'
-                  : nameController.text,
+              nameController.text.isEmpty ? autoName : nameController.text,
             ),
-            child: Text(ref.read(languageServiceProvider).translate('save')),
+            child: Text(languageService.translate('save')),
           ),
         ],
       ),
     );
 
     if (name == null) return;
-    await ref
-        .read(savedPhrasesProvider.notifier)
-        .save(name.isEmpty ? null : name, cards);
+    await ref.read(savedPhrasesProvider.notifier).save(name, cards);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            ref.read(languageServiceProvider).translate('phraseSaved'),
-          ),
+          content: Text(languageService.translate('phraseSaved')),
         ),
       );
     }
@@ -140,11 +136,107 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
     return category?.items ?? [];
   }
 
+  Future<void> _deletePhrase(SavedPhrase phrase) async {
+    final languageService = ref.read(languageServiceProvider);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(languageService.translate('deleteConfirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(languageService.translate('cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(languageService.translate('confirm')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await ref.read(savedPhrasesProvider.notifier).delete(phrase.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(languageService.translate('phraseDeleted')),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showSavedPhrasesSheet() {
+    final languageService = ref.read(languageServiceProvider);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        final phrases = ref.watch(savedPhrasesProvider);
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                languageService.translate('savedPhrases'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (phrases.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    languageService.translate('noSavedPhrases'),
+                    style: TextStyle(
+                      color: DesignTokens.colors.textSecondary,
+                    ),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: phrases.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final phrase = phrases[index];
+                      final label = phrase.name ??
+                          phrase.cardIds.take(3).join(', ');
+                      return ListTile(
+                        title: Text(label, maxLines: 1),
+                        subtitle: Text(
+                          phrase.cardIds.length.toString(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _deletePhrase(phrase);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final languageService = ref.watch(languageServiceProvider);
     final sentenceCards = ref.watch(sentenceProvider);
     final speakingIndex = ref.watch(speakingIndexProvider);
+    final phrases = ref.watch(savedPhrasesProvider);
     final categories = ref
         .watch(pictogramRepositoryProvider)
         .getAllCategories();
@@ -253,9 +345,12 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                   ),
                   const SizedBox(width: 4),
                   _ActionButton(
-                    label: '⭐️', //'💾',
+                    label: '⭐️',
                     fontSize: 18,
                     onTap: hasCards && !isSpeaking ? _savePhrase : null,
+                    onLongPress: hasCards || phrases.isNotEmpty
+                        ? _showSavedPhrasesSheet
+                        : null,
                   ),
                 ],
               ),
@@ -301,11 +396,13 @@ class _ActionButton extends StatelessWidget {
   final String label;
   final double fontSize;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   const _ActionButton({
     required this.label,
     required this.fontSize,
     required this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -315,6 +412,7 @@ class _ActionButton extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           height: 64,
           decoration: BoxDecoration(

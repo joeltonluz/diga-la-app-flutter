@@ -11,6 +11,19 @@ class SavedPhrase {
     required this.createdAt,
   });
 
+  SavedPhrase copyWith({
+    String? id,
+    String? name,
+    List<String>? cardIds,
+    DateTime? createdAt,
+  }) =>
+      SavedPhrase(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        cardIds: cardIds ?? this.cardIds,
+        createdAt: createdAt ?? this.createdAt,
+      );
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
