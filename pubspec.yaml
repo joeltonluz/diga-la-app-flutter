@@ -38,6 +38,7 @@ flutter:
 
   assets:
     - assets/logo.png
+    - assets/feelings/
 
   fonts:
     - family: Nunito

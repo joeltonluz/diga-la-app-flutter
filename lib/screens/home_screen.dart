@@ -4,7 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../providers/language_provider.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/balo_widget.dart';
+import '../widgets/balo_mascote.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -17,6 +17,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        //backgroundColor: DesignTokens.colors.brand,
         title: Text(
           t('appTitle'),
           style: TextStyle(
@@ -60,7 +61,7 @@ class HomeScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(),
-                    const BaloWidget(animation: BaloAnimation.wave),
+                    const BaloMascote(),
                     const SizedBox(height: 20),
                     Text(
                       t('appTitle'),

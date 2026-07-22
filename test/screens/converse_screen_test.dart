@@ -23,55 +23,60 @@ Widget buildTestApp({LanguageService? languageService}) {
 }
 
 void main() {
+  Future<void> pumpScrolled(tester) async {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
   testWidgets('apagar remove o último cartão da frase', (tester) async {
     await tester.pumpWidget(buildTestApp());
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     final firstCard = find.text(sampleCards[0].labelPt).last;
     await tester.tap(firstCard);
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     final secondCard = find.text(sampleCards[1].labelPt).last;
     await tester.tap(secondCard);
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     await tester.tap(find.text('⌫'));
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     expect(find.text(sampleCards[0].labelPt), findsWidgets);
   });
 
   testWidgets('apagar com frase vazia não quebra', (tester) async {
     await tester.pumpWidget(buildTestApp());
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     await tester.tap(find.text('⌫'));
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     expect(find.byType(ConverseScreen), findsOneWidget);
   });
 
   testWidgets('limpar esvazia a frase inteira', (tester) async {
     await tester.pumpWidget(buildTestApp());
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     final firstCard = find.text(sampleCards[0].labelPt).last;
     await tester.tap(firstCard);
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     final secondCard = find.text(sampleCards[1].labelPt).last;
     await tester.tap(secondCard);
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     await tester.tap(find.text('Limpar'));
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     expect(find.text(sampleCards[0].labelPt), findsOneWidget);
   });
 
   testWidgets('grade renderiza cartões do mockup', (tester) async {
     await tester.pumpWidget(buildTestApp());
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     expect(sampleCards.length, 12);
 
@@ -79,14 +84,15 @@ void main() {
     expect(cards, findsAtLeast(3));
 
     await tester.drag(find.byType(GridView), const Offset(0, -500));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(const Key('card_obrigado')), findsOneWidget);
     expect(find.byKey(const Key('card_mais')), findsOneWidget);
   });
 
   testWidgets('botão Falar é ElevatedButton', (tester) async {
     await tester.pumpWidget(buildTestApp());
-    await tester.pumpAndSettle();
+    await pumpScrolled(tester);
 
     expect(find.widgetWithText(ElevatedButton, 'Falar'), findsOneWidget);
   });
